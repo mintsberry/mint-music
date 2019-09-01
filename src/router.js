@@ -1,7 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
-
+import Rank from './views/rank/Rank.vue'
+import Recommend from './views/recommend/Recommend.vue'
+import Search from './views/search/Search.vue'
+import Sings from './views/sings/Sings.vue'
+Vue.use(Router)
 Vue.use(Router)
 
 export default new Router({
@@ -10,16 +13,27 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: Home
+      redirect: 'recommend'
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+      path: '/rank',
+      name: 'rank',
+      component: Rank
+    },
+    {
+      path: '/recommend',
+      name: 'recommend',
+      component: Recommend
+    },
+    {
+      path: '/search',
+      name: 'search',
+      component: Search
+    },
+    {
+      path: '/sings',
+      name: 'sings',
+      component: Sings
     }
   ]
 })
