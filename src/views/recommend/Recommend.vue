@@ -1,7 +1,19 @@
 <template>
   <div class="recommend">
     <div class="recommend-content">
-      <div class="slider-wrapp"></div>
+      <div class="slider-wrapp">
+        <div v-if="recommend.length">
+          <Slider>
+            
+                <div v-for="(item, index) in recommend" :key="index" >
+                <a :href="item.linkUrl">
+                  <img :src="item.picUrl" alt="">
+                </a>
+              </div>
+            
+          </Slider>
+        </div>  
+      </div>
       <div class="recommend-list">
         <h1 class="list-title">热门歌单推荐</h1>
         <ul></ul>
@@ -13,9 +25,10 @@
 <script>
   import {getRecommend} from '../../api/recommend'
   import {ERR_OK} from '../../common/js/config';
+  import Slider from '../../components/silder/Silder.vue';
   export default {
     components: {
-      
+        Slider      
     },
 
     props: {
@@ -24,6 +37,7 @@
 
     data () {
       return {
+        recommend: []
       };
     },
 
@@ -34,7 +48,7 @@
     created() {
       getRecommend().then((res) => {
         if (res.code === 0){
-          console.log(res.data);
+          this.recommend = res.data.slider;
         }
       })
     },
