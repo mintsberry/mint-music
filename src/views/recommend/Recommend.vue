@@ -1,16 +1,17 @@
 <template>
   <div class="recommend">
-    <div class="recommend-content">
-      <div class="slider-wrapper">
+    <Scroll  class="recommend-content" :data="discList" ref="scroll">
+      <div>
+        <div class="slider-wrapper">
         <div v-if="recommend.length">
-          <Slider>
+          <Slider >
                 <div v-for="(item, index) in recommend" :key="index" >
                 <a :href="item.linkUrl">
-                  <img :src="item.picUrl" alt="">
+                  <img :src="item.picUrl" @load="imgLoad" alt="">
                 </a>
               </div>
           </Slider>
-        </div>  
+        </div>    
       </div>
       <div class="recommend-list">
         <h1 class="list-title">热门歌单推荐</h1>
@@ -26,7 +27,8 @@
           </li>
         </ul>
       </div>
-    </div>
+      </div>
+    </Scroll>
   </div>
 </template>
 
@@ -34,9 +36,11 @@
   import {getRecommend,getDiscList} from '../../api/recommend'
   import {ERR_OK} from '../../api/config';
   import Slider from '../../components/silder/Silder.vue';
+  import Scroll from '../../components/scroll/Scroll.vue';
   export default {
     components: {
-        Slider      
+        Slider,
+        Scroll    
     },
 
     props: {
@@ -62,14 +66,18 @@
       })
       getDiscList().then((res) => {
         if (res.code === ERR_OK){
-          console.log(res.data.list);
           this.discList = res.data.list;
         }
       })
     },
 
     methods: {
-      
+      imgLoad(){
+        if (!this.imgLoadFlag){
+          this.$refs.scroll.refresh();
+          this.imgLoadFlag = true;
+        }
+      }
     },
 
 }
@@ -79,13 +87,12 @@
   .recommend
     position fixed
     top 80px
-    left 0
+    bottom 0
     width 100%
     .recommend-content
       height: 100%
       overflow: hidden
       .slider-wrapper
-        max-height 150px
         position relative
         width 100%
         overflow hidden
