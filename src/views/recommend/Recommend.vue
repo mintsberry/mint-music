@@ -18,7 +18,7 @@
         <ul>
           <li class="item" v-for="(item, index) in discList" :key="index">
             <div class="icon">
-              <img width="60" height="60" :src="item.imgurl" alt="">
+              <img width="60" height="60" v-lazy="item.imgurl" alt="">
             </div>
             <div class="text">
               <h2 class="name" v-html="item.creator.name"></h2>
@@ -66,6 +66,7 @@
       })
       getDiscList().then((res) => {
         if (res.code === ERR_OK){
+          console.log(res);
           this.discList = res.data.list;
         }
       })
