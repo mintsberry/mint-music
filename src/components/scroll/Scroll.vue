@@ -16,7 +16,7 @@
     props: {
       probeType: {
         type: Number,
-        default: 1
+        default: 2
       },
       click: {
         type: Boolean,
@@ -26,6 +26,10 @@
         type: Array,
         default: null
       },
+      listenScroll: {
+        type: Boolean,
+        default: false
+      }
     },
 
     data () {
@@ -57,8 +61,15 @@
           return ;
         }
         this.scroll = new BScroll(this.$refs.wrapper, {
-          click: this.click
+          click: this.click,
+          probeType: this.probeType
         })
+        if(this.listenScroll) {
+          let me = this
+          this.scroll.on('scroll', (pos) => {
+            me.$emit('scroll', pos)
+          })
+        }
       },
       enable(){
         this.scroll && this.scroll.enable()
@@ -68,6 +79,12 @@
       },
       refresh() {
         this.scroll && this.scroll.refresh();
+      },
+      scrollTo() {
+        this.scroll && this.scroll.scrollTo.apply(this.scroll, arguments)
+      },
+      scrollToElement() {
+        this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
       }
     },
 
