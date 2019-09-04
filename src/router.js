@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import Rank from './views/rank/Rank.vue'
 import Recommend from './views/recommend/Recommend.vue'
 import Search from './views/search/Search.vue'
-import Sings from './views/sings/Sings.vue'
+import Singer from './views/sings/Singer.vue'
 Vue.use(Router)
 Vue.use(Router)
 
@@ -31,9 +31,9 @@ export default new Router({
       component: Search
     },
     {
-      path: '/sings',
-      name: 'sings',
-      component: Sings
+      path: '/singer',
+      name: 'singer',
+      component: Singer
     }
   ]
 })
