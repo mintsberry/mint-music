@@ -9,14 +9,14 @@
       <li v-for="(group, index) in data" :key="index" class="list-group" ref="listGroup">
         <h2 class="list-group-title">{{group.title}}</h2>
         <ul>
-          <li v-for="(item, index) in group.item" :key="index"  class="list-group-item">
+          <li v-for="(item, index) in group.item" :key="index"  class="list-group-item" @click="selectItem(item)">
             <img class="avatar" v-lazy="item.avatar">
             <span class="name">{{item.name}}</span>
           </li>
         </ul>
       </li>
     </ul>
-    <div class="list-shortcut" @touchstart="onShortcutTouchStart" @touchmove.stop="onShortcutTouchMove">
+    <div class="list-shortcut" v-show="data.length" @touchstart="onShortcutTouchStart" @touchmove.stop="onShortcutTouchMove">
       <ul>
         <li v-for="(item, index) in shortcutList" class="item" :class="{ 'current' : currentIndex === index }" :key="index" :data-index="index" >
           {{item}}
@@ -89,12 +89,11 @@
           let heightlow = listenHeight[i];
           let heighttop = listenHeight[i+1];
           if (-newY >= heightlow && -newY < heighttop) {
-            this.currentIndex = i;
+            this.currentIndex = i
             this.diff = heighttop + newY;
-            return ;
+            return 
           }
         }
-
         this.currentIndex = listenHeight.length - 2
       },
       diff(newVal) {
@@ -132,11 +131,14 @@
       scroll(pos) {
         this.scrollY = pos.y
       },
+      selectItem(item) {
+        this.$emit("select", item)
+      },
       _scrollTo(index) {
         this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0);
       },
       _calculateHeight() {
-        this.listenHeight = [];
+        this.listenHeight = []; 
         const list = this.$refs.listGroup;
         let height = 0;
         this.listenHeight.push(height);

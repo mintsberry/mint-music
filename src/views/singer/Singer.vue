@@ -1,6 +1,9 @@
 <template>
   <div class="singer">
-    <ListView :data="singers"></ListView>
+    <ListView :data="singers" @select="selectSinger"></ListView>
+    <transition name="fade">
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
@@ -9,6 +12,7 @@
   import {ERR_OK} from '../../api/config'
   import ListView from '../../components/listview/ListView.vue'
   import Singer from '../../common/js/singer'
+  import {mapMutations} from 'vuex'
   const HOT_NAME = "热门";
   const HOT_SINGER_LEN = 10;
   export default {
@@ -35,6 +39,12 @@
     },
 
     methods: {
+      selectSinger(singer){     
+        this.$router.push({
+          path: `/singer/${singer.id}`
+        })
+        this.setSinger(singer);
+      },
       _getSingerList(){
         getSingerList().then((res) =>{
           if (res.code === ERR_OK) {
@@ -85,7 +95,10 @@
           return a.title.charCodeAt(0) - b.title.charCodeAt(0);
         })
         return hot.concat(ret);
-      }
+      },
+      ...mapMutations({
+        setSinger: 'SET_SINGER'
+      })
     },
 
 }
@@ -96,4 +109,11 @@
     top 88px
     bottom 0
     width 100%
+  .fade-enter-active,
+  .fade-leave-active
+    transition all .2s linear 
+  .fade-enter
+    transform translateX(100%)
+  .fade-leave-to
+    transform translateX(-100%)
 </style>
