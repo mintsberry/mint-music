@@ -109,9 +109,9 @@
         animations.registerAnimation({
           name: 'move',
           animation,
-          preset: {
-            duration: 400,
-            easing: 'liner'
+          presets: {
+            duration: 500,
+            easing: 'linear'
           }
         })
         animations.runAnimation(this.$refs.cdWrapper, 'move', done);
@@ -125,6 +125,9 @@
         const {x, y, scale} = this._getPosAndScale();
         this.$refs.cdWrapper.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`
         this.$refs.cdWrapper.addEventListener('transitionend', done)
+        // setTimeout(() => {
+        //   done();
+        // }, 1000);
       },
       afterLeave(){
         this.$refs.cdWrapper.style.transition = '';
