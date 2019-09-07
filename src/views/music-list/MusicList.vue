@@ -16,7 +16,7 @@
     <div class="bg-layer" ref="layer"></div>
     <Scroll :probeType="probeType" :listenScroll="listenScroll" :data="songs" class="list" ref="list" @scroll="scroll">
       <div class="song-list-wrapper">
-        <SongList :songs="songs"></SongList>
+        <SongList :songs="songs" @select="selectItem"></SongList>
       </div>
       <div class="loading-container" v-show="!songs.length">
         <Loading></Loading>
@@ -30,6 +30,7 @@
   import Scroll from '../../components/scroll/Scroll.vue'
   import SongList from '../../components/songList/SongList.vue'
   import Loading from '../../components/loading/Loading.vue'
+  import {mapActions} from 'vuex'
   const RESEVED_HEIGHT = 44;
   export default {
     components: {
@@ -113,7 +114,16 @@
       },
       back(){
         this.$router.go(-1);
-      }
+      },
+      selectItem(item, index) {
+        this.selectPlay({
+          list: this.songs,
+          index
+        })
+      },
+      ...mapActions([
+        'selectPlay'
+      ])
     },
 
 }

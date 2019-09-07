@@ -5,15 +5,18 @@
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
+    <Player></Player>
   </div>
 </template>
 <script>
 import Header from './views/header/Header.vue'
 import Tab from './views/tab/Tab.vue'
+import Player from './views/player/Player.vue'
 export default {
   components: {
     Header,
-    Tab
+    Tab,
+    Player
   },
 
 }

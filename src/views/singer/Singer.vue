@@ -112,8 +112,7 @@
   .fade-enter-active,
   .fade-leave-active
     transition all .2s linear 
-  .fade-enter
-    transform translateX(100%)
+  .fade-enter,
   .fade-leave-to
-    transform translateX(-100%)
+    transform translateX(100%)
 </style>

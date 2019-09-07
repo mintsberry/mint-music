@@ -91,7 +91,7 @@
   @import '../../common/stylus/variable.styl';
   .recommend
     position fixed
-    top 80px
+    top 84px
     bottom 0
     width 100%
     .recommend-content
