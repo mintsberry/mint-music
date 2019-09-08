@@ -27,17 +27,24 @@
             </div>
           </div>
           <div class="bottom">
+            <div class="progress-wrapper">
+              <span class="time time-l">{{format(currentTime)}}</span>
+              <div class="progress-bar-wrapper">
+                <ProgressBar :percent='percent' @percentChange="onPorgressBarChange"></ProgressBar>
+              </div>
+              <span class="time time-r">{{format(currentSong.duration)}}</span>
+            </div>
             <div class="operators">
-              <div class="icon i-left">
+              <div class="icon i-left" >
                 <i class="icon-sequence"></i>
               </div>
-              <div class="icon i-left">
+              <div class="icon i-left" :class="disableCls">
                 <i class="icon-prev" @click="prev"></i>
               </div>
-              <div class="icon i-center"> 
+              <div class="icon i-center" :class="disableCls"> 
                 <i :class="playIcon" @click="togglePlaying"></i>
               </div>
-              <div class="icon i-right">
+              <div class="icon i-right" :class="disableCls">
                 <i class="icon-next" @click="next"></i>
               </div>
               <div class="icon i-right">
@@ -69,6 +76,7 @@
       ref="audio"
       @canplay="ready"
       @error="error"
+      @timeupdate="updateTime"
     ></audio>
   </div>
 </template>
@@ -76,10 +84,11 @@
   import  {mapGetters, mapMutations} from 'vuex'
   import {getSong} from '../../api/song'
   import animations from 'create-keyframe-animation'
-import { get } from 'http';
+  import ProgressBar from '../../components/progressBar/ProgressBar.vue'
+  import { get } from 'http';
   export default {
     components: {
-      
+      ProgressBar
     },
     props: {
       
@@ -87,7 +96,8 @@ import { get } from 'http';
     data () {
       return {
         songUrl: '',
-        songReady: ''
+        songReady: '',
+        currentTime: 0
       };
     },
     computed: {
@@ -99,6 +109,12 @@ import { get } from 'http';
       },
       cdCls(){
         return this.playing ? 'play' : 'play pause';
+      },
+      disableCls(){
+        return this.songReady ? '' : 'disable';
+      },
+      percent() {
+        return this.currentTime / this.currentSong.duration
       },
       ...mapGetters([
         'fullScreen',
@@ -155,16 +171,33 @@ import { get } from 'http';
         this.setFullScreent(true);
       },
       ready() {
+        
         this.songReady = true;
       },
       error() {
-
+        this.songReady = true;
+        console.log("无法播放");
+      },
+      updateTime(e) {
+        this.currentTime = e.target.currentTime;
+      },
+      format(interval){
+        interval = interval | 0;
+        let minute = interval / 60 | 0;
+        let second = interval % 60;
+        if (second.toString().length == 1){
+          second = '0' + second;
+        }
+        return `${minute}:${second}`
+      },
+      onPorgressBarChange(percent) {
+        this.$refs.audio.currentTime = this.currentSong.duration * percent;
       },
       prev(){
         if (!this.songReady) {
           return ;
         }
-        let index = this.currentIndex + 1;
+        let index = this.currentIndex - 1;
         if (index === -1){
           index = this.playList.length - 1;
         }
@@ -372,7 +405,24 @@ import { get } from 'http';
               width 20px
               border-radius 5px
               background $color-text-ll
-
+        .progress-wrapper
+          display: flex
+          align-items: center
+          width: 80%
+          margin: 0px auto
+          padding: 10px 0
+          .time
+            color: $color-text
+            font-size: $font-size-small
+            flex: 0 0 30px
+            line-height: 30px
+            width: 30px
+            &.time-l
+              text-align: left
+            &.time-r
+              text-align: right
+          .progress-bar-wrapper
+            flex: 1
         .operators
           display flex
           align-items center
@@ -380,7 +430,7 @@ import { get } from 'http';
             flex 1
             color $color-theme-d
             &.disable
-              color $color-theme-d
+              color $color-theme
             i
               font-size 30px
           .i-left
