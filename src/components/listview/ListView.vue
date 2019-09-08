@@ -35,7 +35,7 @@
 <script>
   import {getData} from '../../common/js/dom'
   import Scroll from '../scroll/Scroll.vue'
-  import Loading from '../loading/Loading.vue';
+  import Loading from '../loading/Loading.vue'
   const ANCHOR_HEIGHT = 18;
   const TITLE_HEIGHT = 30
   export default {
@@ -70,7 +70,8 @@
           return ''
         }
         return this.data[this.currentIndex] ? this.data[this.currentIndex].title : '';
-      }
+      },
+  
     },
 
     watch: {

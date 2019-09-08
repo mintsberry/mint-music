@@ -21,7 +21,9 @@
         <div class="middle">
           <div class="middle-l">
             <div class="cd-wrapper" ref="cdWrapper">
-              <img :src="currentSong.image" alt="" class="image">
+              <div class="cd" >
+                <img class="image" :src="currentSong.image" :class="cdCls">
+              </div>
             </div>
           </div>
           <div class="bottom">
@@ -30,13 +32,13 @@
                 <i class="icon-sequence"></i>
               </div>
               <div class="icon i-left">
-                <i class="icon-prev"></i>
+                <i class="icon-prev" @click="prev"></i>
               </div>
               <div class="icon i-center"> 
-                <i class="icon-play"></i>
+                <i :class="playIcon" @click="togglePlaying"></i>
               </div>
               <div class="icon i-right">
-                <i class="icon-next"></i>
+                <i class="icon-next" @click="next"></i>
               </div>
               <div class="icon i-right">
                 <i class="icon icon-not-favorite"></i>
@@ -49,23 +51,32 @@
     <transition name="mini">
       <div class="mini-player" v-show="!fullScreen" @click="open">
         <div class="icon">
-          <img width="40" height="40" :src="currentSong.image" alt="">
+          <img width="40" height="40" :src="currentSong.image" alt="" :class="cdCls">
         </div>
         <div class="text">
           <h2 class="name" v-html="currentSong.name" ></h2>
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
-        <div class="control"></div>
+        <div class="control">
+          <i :class="miniIcon" @click.stop="togglePlaying"></i>
+        </div>
         <div class="control">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+    <audio :src="songUrl" 
+      ref="audio"
+      @canplay="ready"
+      @error="error"
+    ></audio>
   </div>
 </template>
 <script>
   import  {mapGetters, mapMutations} from 'vuex'
+  import {getSong} from '../../api/song'
   import animations from 'create-keyframe-animation'
+import { get } from 'http';
   export default {
     components: {
       
@@ -75,14 +86,64 @@
     },
     data () {
       return {
+        songUrl: '',
+        songReady: ''
       };
     },
     computed: {
+      playIcon(){
+        return this.playing ? 'icon-pause' : 'icon-play';
+      },
+      miniIcon(){
+        return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+      },
+      cdCls(){
+        return this.playing ? 'play' : 'play pause';
+      },
       ...mapGetters([
         'fullScreen',
         'playList',
-        'currentSong'
+        'currentIndex',
+        'currentSong',
+        'playing'
       ])
+    },
+    watch: {
+      currentSong(){
+        getSong(this.currentSong.mid).then((resp) => {
+          if (resp.code === 0){
+            if (resp.req_0){
+              let songData = resp.req_0;
+              if (songData.code === 0) {
+                songData = songData.data;
+                if (songData.sip.length && songData.midurlinfo.length){
+                  if (songData.midurlinfo[0].purl && songData.midurlinfo[0].purl !== ''){
+                    this.songUrl = songData.sip[0] + songData.midurlinfo[0].purl;
+                  } else {
+                    this.songUrl = "";
+                    console.log(resp);
+                  }
+                }
+              }
+            }
+          }
+        })
+      },
+      songUrl() {
+        if (this.songUrl && this.songUrl != ''){
+          this.$nextTick(() => {
+            this.$refs.audio.play();
+          });
+        }
+      },
+      playing(newPlaying) {
+        const audio = this.$refs.audio
+        if (this.songUrl && this.songUrl != ''){
+          this.$nextTick( () => {
+            newPlaying ? audio.play() : audio.pause();
+          })
+        }
+      }
     },
     created() {
     },
@@ -92,6 +153,43 @@
       },
       open() {
         this.setFullScreent(true);
+      },
+      ready() {
+        this.songReady = true;
+      },
+      error() {
+
+      },
+      prev(){
+        if (!this.songReady) {
+          return ;
+        }
+        let index = this.currentIndex + 1;
+        if (index === -1){
+          index = this.playList.length - 1;
+        }
+        this.setCurrentIndex(index);
+        if (!this.playing){
+          this.setPlayingState(!this.playing);
+        }
+        this.songReady = false;
+      },
+      togglePlaying() {
+        this.setPlayingState(!this.playing);
+      },
+      next(){
+        if (!this.songReady) {
+          return ;
+        }
+        let index = this.currentIndex + 1;
+        if (index === this.playList.length){
+          index = 0;
+        }
+        this.setCurrentIndex(index);
+        if (!this.playing){
+          this.setPlayingState(!this.playing);
+        }
+        this.songReady = false;
       },
       enter(el, done) {
         const {x,y,scale} = this._getPosAndScale();
@@ -149,7 +247,9 @@
         }
       },
       ...mapMutations({
-        setFullScreent: 'SET_FULL_SCREEN'
+        setFullScreent: 'SET_FULL_SCREEN',
+        setPlayingState: 'SET_PLAYING_STATE',
+        setCurrentIndex: 'SET_CURRENT_INDEX'
       })
     },
 }
@@ -218,8 +318,8 @@
       .middle
         position fixed
         width 100%
-        top 80px
-        bottom 0px
+        top 88px
+        bottom 20px
         white-space nowrap
         font-size 0
         .middle-l
@@ -235,24 +335,24 @@
             top 0
             width 80%
             height 100%
+            .cd
+              width: 100%
+              height: 100%
+              box-sizing: border-box
+              border: 10px solid rgba(255, 255, 255, 0.1)
+              border-radius: 50%
+              
             .image
-              position absolute
+              // position absolute
               left 0
               top 0
               width 100%
               height 100%
-              border-radius 50%
-          .cd 
-            width 100%
-            height 100%
-            box-sizing border-box
-            border 10px solid rgba(255,255,255,0.1)
-            border-radius 50%
-            &.play
-              animation rotate 20s linear infinite
-            &.pause
-              animation-play-state paused
-            
+              border-radius 50%    
+              &.play
+                animation: rotate 20s linear infinite
+              &.pause
+                animation-play-state: paused
       .bottom
         position absolute
         bottom 50px
@@ -341,7 +441,7 @@
         width 30px
         padding 0 10px
         .icon-play-mini, 
-        .icon-pause-min,
+        .icon-pause-mini,
         .icon-playlist
           font-size 30px
           color $color-theme-d
@@ -350,6 +450,10 @@
           position absolute
           left 0
           top 0
-
+  @keyframes rotate
+    0%
+      transform rotate(0)
+    100%
+      transform rotate(360deg)
 
 </style>
