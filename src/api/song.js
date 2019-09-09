@@ -56,3 +56,17 @@ export function getSong(songmid) {
   // }).then(res => Promise.resolve(res.data));
 }
 
+export function getLyric(songmid) {
+  const url = '/api/lyric';
+  const data = Object.assign({}, commonParams, {
+    songmid: songmid,
+    pcachetime: +new Date(),
+    g_tk:67232076,
+    format: 'json'
+  })
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data);
+  })
+}

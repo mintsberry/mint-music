@@ -91,6 +91,7 @@
   import ProgressBar from '../../components/progressBar/ProgressBar.vue'
   import ProgressCircle from '../../components/progressCircle/ProgressCircle.vue'
   import {playMode} from '../../common/js/config'
+  import Lyric from 'lyric-parser'
   import { get } from 'http';
   export default {
     components: {
@@ -104,6 +105,7 @@
         songUrl: '',
         songReady: '',
         currentTime: 0,
+        currentLyric: null
       };
     },
     computed: {
@@ -159,9 +161,15 @@
         if (this.songUrl && this.songUrl != ''){
           this.$nextTick(() => {
             this.$refs.audio.play();
-            this.currentSong.getLyric();
+            this.currentSong.getLyric().then((lyric)=>{
+            this.currentLyric = new Lyric(lyric);
+            console.log("TCL: getLyric -> this.currentLyric", this.currentLyric)
+        })
           });
         }
+      },
+      getLyric() {
+
       },
       playing(newPlaying) {
         const audio = this.$refs.audio
@@ -205,7 +213,6 @@
         this.setPlayMode(mode);
       },
       onPorgressBarChange(percent) {
-        console.log(percent);
         if (this.songUrl && this.songUrl != ''){
           this.$refs.audio.currentTime = this.currentSong.duration * percent;
         }
