@@ -65,7 +65,10 @@
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-          <i :class="miniIcon" @click.stop="togglePlaying"></i>
+          <ProgressCircle :radius="32" :percent="percent">
+            <i class="icon-mini" :class="miniIcon" @click.stop="togglePlaying"></i>
+          </ProgressCircle>
+          
         </div>
         <div class="control">
           <i class="icon-playlist"></i>
@@ -85,19 +88,20 @@
   import {getSong} from '../../api/song'
   import animations from 'create-keyframe-animation'
   import ProgressBar from '../../components/progressBar/ProgressBar.vue'
+  import ProgressCircle from '../../components/progressCircle/ProgressCircle.vue'
   import { get } from 'http';
   export default {
     components: {
-      ProgressBar
+      ProgressBar,
+      ProgressCircle
     },
     props: {
-      
     },
     data () {
       return {
         songUrl: '',
         songReady: '',
-        currentTime: 0
+        currentTime: 0,
       };
     },
     computed: {
@@ -496,6 +500,7 @@
           font-size 30px
           color $color-theme-d
         .icon-mini
+          z-index -1
           font-size 32px
           position absolute
           left 0
