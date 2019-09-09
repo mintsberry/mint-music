@@ -73,7 +73,6 @@
       _triggerPercent(){
         const barWidth = this.$refs.progressBar.clientWidth - progressBtnWidth;
         const percent = this.$refs.progress.clientWidth / barWidth;
-        console.log()
         this.$emit('percentChange', percent);
       }
     },

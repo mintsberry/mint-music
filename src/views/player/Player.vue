@@ -36,7 +36,7 @@
             </div>
             <div class="operators">
               <div class="icon i-left" >
-                <i class="icon-sequence"></i>
+                <i :class="iconMode" @click="changeMode"></i>
               </div>
               <div class="icon i-left" :class="disableCls">
                 <i class="icon-prev" @click="prev"></i>
@@ -80,6 +80,7 @@
       @canplay="ready"
       @error="error"
       @timeupdate="updateTime"
+      @ended="end"
     ></audio>
   </div>
 </template>
@@ -89,6 +90,7 @@
   import animations from 'create-keyframe-animation'
   import ProgressBar from '../../components/progressBar/ProgressBar.vue'
   import ProgressCircle from '../../components/progressCircle/ProgressCircle.vue'
+  import {playMode} from '../../common/js/config'
   import { get } from 'http';
   export default {
     components: {
@@ -120,12 +122,16 @@
       percent() {
         return this.currentTime / this.currentSong.duration
       },
+      iconMode() {
+        return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop'  : 'icon-random'
+      },
       ...mapGetters([
         'fullScreen',
         'playList',
         'currentIndex',
         'currentSong',
-        'playing'
+        'playing',
+        'mode'
       ])
     },
     watch: {
@@ -153,6 +159,7 @@
         if (this.songUrl && this.songUrl != ''){
           this.$nextTick(() => {
             this.$refs.audio.play();
+            this.currentSong.getLyric();
           });
         }
       },
@@ -180,7 +187,6 @@
       },
       error() {
         this.songReady = true;
-        console.log("无法播放");
       },
       updateTime(e) {
         this.currentTime = e.target.currentTime;
@@ -194,8 +200,15 @@
         }
         return `${minute}:${second}`
       },
+      changeMode() {
+        const mode = (this.mode + 1) % 3
+        this.setPlayMode(mode);
+      },
       onPorgressBarChange(percent) {
-        this.$refs.audio.currentTime = this.currentSong.duration * percent;
+        console.log(percent);
+        if (this.songUrl && this.songUrl != ''){
+          this.$refs.audio.currentTime = this.currentSong.duration * percent;
+        }
       },
       prev(){
         if (!this.songReady) {
@@ -218,7 +231,12 @@
         if (!this.songReady) {
           return ;
         }
-        let index = this.currentIndex + 1;
+        let index = 0
+        if (this.mode === playMode.random){
+          index = Math.random() * this.playList.length | 0
+        } else {
+          index = this.currentIndex + 1;
+        }
         if (index === this.playList.length){
           index = 0;
         }
@@ -227,6 +245,17 @@
           this.setPlayingState(!this.playing);
         }
         this.songReady = false;
+      },
+      loop() {
+        this.$refs.audio.currentTime = 0;
+        this.$refs.audio.play();
+      },
+      end() {
+        if (this.mode === playMode.loop){
+          this.loop();
+        } else {        
+          this.next();
+        }
       },
       enter(el, done) {
         const {x,y,scale} = this._getPosAndScale();
@@ -286,7 +315,8 @@
       ...mapMutations({
         setFullScreent: 'SET_FULL_SCREEN',
         setPlayingState: 'SET_PLAYING_STATE',
-        setCurrentIndex: 'SET_CURRENT_INDEX'
+        setCurrentIndex: 'SET_CURRENT_INDEX',
+        setPlayMode : 'SET_PLAY_MODE'
       })
     },
 }
