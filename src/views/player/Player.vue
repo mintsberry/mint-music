@@ -18,8 +18,12 @@
           <h1 class="title" v-html="currentSong.name"></h1>
           <h2 class="subtitle" v-html="currentSong.singer"></h2>
         </div>
-        <div class="middle">
-          <div class="middle-l">
+        <div class="middle" 
+          @touchstart.prevent="middleTouchStart"
+          @touchmove.prevent="middleTouchMove"
+          @touchend.prevent="middleTouchEnd"
+        >
+          <div class="middle-l" ref="middleL">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd" >
                 <img class="image" :src="currentSong.image" :class="cdCls">
@@ -35,31 +39,36 @@
               </div>
             </div>
           </Scroll>
-          <div class="bottom">
-            <div class="progress-wrapper">
-              <span class="time time-l">{{format(currentTime)}}</span>
-              <div class="progress-bar-wrapper">
-                <ProgressBar :percent='percent' @percentChange="onPorgressBarChange"></ProgressBar>
-              </div>
-              <span class="time time-r">{{format(currentSong.duration)}}</span>
+
+        </div>
+        <div class="bottom">
+          <div class="dot-wrapper">
+            <span class="dot" :class="{'active' : currentShow === 'cd'}"></span>
+            <span class="dot" :class="{'active' : currentShow === 'lyric'}"></span>
+          </div>
+          <div class="progress-wrapper">
+            <span class="time time-l">{{format(currentTime)}}</span>
+            <div class="progress-bar-wrapper">
+              <ProgressBar :percent='percent' @percentChange="onPorgressBarChange"></ProgressBar>
             </div>
-            <div class="operators">
-              <div class="icon i-left" >
-                <i :class="iconMode" @click="changeMode"></i>
-              </div>
-              <div class="icon i-left" :class="disableCls">
-                <i class="icon-prev" @click="prev"></i>
-              </div>
-              <div class="icon i-center" :class="disableCls"> 
-                <i :class="playIcon" @click="togglePlaying"></i>
-              </div>
-              <div class="icon i-right" :class="disableCls">
-                <i class="icon-next" @click="next"></i>
-              </div>
-              <div class="icon i-right">
-                <i class="icon icon-not-favorite"></i>
-              </div>  
+            <span class="time time-r">{{format(currentSong.duration)}}</span>
+          </div>
+          <div class="operators">
+            <div class="icon i-left" >
+              <i :class="iconMode" @click="changeMode"></i>
             </div>
+            <div class="icon i-left" :class="disableCls">
+              <i class="icon-prev" @click="prev"></i>
+            </div>
+            <div class="icon i-center" :class="disableCls"> 
+              <i :class="playIcon" @click="togglePlaying"></i>
+            </div>
+            <div class="icon i-right" :class="disableCls">
+              <i class="icon-next" @click="next"></i>
+            </div>
+            <div class="icon i-right">
+              <i class="icon icon-not-favorite"></i>
+            </div>  
           </div>
         </div>
       </div>
@@ -117,7 +126,8 @@
         songReady: '',
         currentTime: 0,
         currentLyric: null,
-        currentLineNum: 0
+        currentLineNum: 0,
+        currentShow: 'cd'
       };
     },
     computed: {
@@ -188,6 +198,7 @@
       }
     },
     created() {
+      this.touch = {};
     },
     methods: {
       back() {
@@ -283,7 +294,9 @@
         this.currentLineNum = lineNum;
         if (lineNum > 5){
           let lineEl = this.$refs.lyricLine[lineNum-5]
-          this.$refs.lyricList.scrollToElement(lineEl, 1000);
+          if (lineEl){
+            this.$refs.lyricList.scrollToElement(lineEl, 1000);
+          }
         } else {
           this.$refs.lyricList.scrollTo(0, 0, 1000);
         }
@@ -327,6 +340,58 @@
       afterLeave(){
         this.$refs.cdWrapper.style.transition = '';
         this.$refs.cdWrapper.style.transform = '';
+      },
+      middleTouchStart(e){
+        this.touch.initiated = true;
+        const touch = e.touches[0]
+        this.touch.startX = touch.pageX;  
+        this.touch.startY = touch.pageY;
+        this.touch.percent = -1;
+      },
+      middleTouchMove(e){
+        if (!this.touch.initiated) {
+          return
+        }
+        const touch = e.touches[0]
+        const deltaX = touch.pageX - this.touch.startX;
+        const deltaY = touch.pageY - this.touch.startY;
+        if (Math.abs(deltaY)>Math.abs(deltaX)) {
+          return ;
+        }
+        const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
+        const width = Math.min(Math.max(-window.innerWidth, left + deltaX), 0);
+        this.$refs.lyricList.$el.style.transform = `translate3d(${width}px,0,0)`
+        this.$refs.lyricList.$el.style.transitionDuration = '300ms'
+        this.touch.percent = Math.abs(width / window.innerWidth);
+        this.$refs.middleL.style.opacity = 1 - this.touch.percent
+      },
+      middleTouchEnd(e){
+        let offsetWidth;
+        let opacity;
+        if (this.touch.percent === -1){
+          return ;
+        }
+        if (this.currentShow === 'cd') {
+          if (this.touch.percent > 0.3) {
+            offsetWidth = -window.innerWidth
+            this.currentShow = 'lyric'
+            opacity = 0
+          } else {
+            offsetWidth = 0
+            opacity = 1
+          }
+        } else {
+          if (this.touch.percent < 0.7){
+            offsetWidth = 0
+            this.currentShow = 'cd'
+            opacity = 1
+          } else {
+            offsetWidth = -window.innerWidth
+            opacity = 0
+          }
+        }
+        this.$refs.lyricList.$el.style.transform = `translate3d(${offsetWidth}px,0,0)`
+        this.$refs.middleL.style.opacity = opacity
       },
       _getPosAndScale() {
         const targetWidth = 40;
@@ -426,6 +491,7 @@
           position relative
           width 100%
           height 0
+          margin-top 50px
           padding-top 80%
           .cd-wrapper
             position absolute
