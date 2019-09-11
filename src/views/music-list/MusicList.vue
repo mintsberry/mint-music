@@ -31,6 +31,7 @@
   import SongList from '../../components/songList/SongList.vue'
   import Loading from '../../components/loading/Loading.vue'
   import {mapActions} from 'vuex'
+  import {playlistMixin} from '../../common/js/mixin'
   const RESEVED_HEIGHT = 44;
   export default {
     components: {
@@ -53,13 +54,12 @@
         default: ''
       }
     },
-
     data () {
       return {
         scrollY: 0
       };
     },
-
+    mixins: [playlistMixin],
     computed: {
       bgStyle() {
         return `background-image:url(${this.bgImage})`
@@ -109,6 +109,11 @@
     },
 
     methods: {
+      handlePlaylist(playlist){
+        const bottom = playlist.length > 0 ? '60px' : '';
+        this.$refs.list.$el.style.bottom = bottom;
+        this.$refs.list.refresh();
+      },
       scroll(pos){
         this.scrollY = pos.y;
       },

@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend">
+  <div class="recommend" ref="recommend">
     <Scroll  class="recommend-content" :data="discList" ref="scroll">
       <div>
         <div class="slider-wrapper">
@@ -41,6 +41,7 @@
   import Slider from '../../components/silder/Silder.vue';
   import Loading from '../../components/loading/Loading.vue';
   import Scroll from '../../components/scroll/Scroll.vue';
+  import {playlistMixin} from '../../common/js/mixin'  
   export default {
     components: {
         Slider,
@@ -58,7 +59,7 @@
         discList: []
       };
     },
-
+    mixins: [playlistMixin],
     computed: {
       
     },
@@ -77,6 +78,11 @@
     },
 
     methods: {
+      handlePlaylist(playlist){
+        const bottom = playlist.length > 0 ? '60px' : '';
+        this.$refs.recommend.style.bottom = bottom;
+        this.$refs.scroll.refresh();
+      },
       imgLoad(){
         if (!this.imgLoadFlag){
           this.$refs.scroll.refresh();

@@ -1,6 +1,6 @@
 <template>
-  <div class="singer">
-    <ListView :data="singers" @select="selectSinger"></ListView>
+  <div class="singer" ref="singer">
+    <ListView :data="singers" @select="selectSinger" ref="list"></ListView>
     <transition name="fade">
       <router-view></router-view>
     </transition>
@@ -13,6 +13,7 @@
   import ListView from '../../components/listview/ListView.vue'
   import Singer from '../../common/js/singer'
   import {mapMutations} from 'vuex'
+  import {playlistMixin} from '../../common/js/mixin'
   const HOT_NAME = "热门";
   const HOT_SINGER_LEN = 10;
   export default {
@@ -29,7 +30,7 @@
         singers: []
       };
     },
-
+    mixins: [playlistMixin],
     computed: {
 
     },
@@ -39,6 +40,11 @@
     },
 
     methods: {
+      handlePlaylist(playlist){
+        const bottom = playlist.length > 0 ? '60px' : '';
+        this.$refs.singer.style.bottom = bottom;
+        this.$refs.list.refresh();
+      },
       selectSinger(singer){     
         this.$router.push({
           path: `/singer/${singer.id}`

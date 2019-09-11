@@ -58,7 +58,6 @@
         diff:-1
       };
     },
-
     computed: {
       shortcutList() {
         return this.data.map((group) => {
@@ -131,6 +130,9 @@
       },
       scroll(pos) {
         this.scrollY = pos.y
+      },
+      refresh(){
+        this.$refs.listview.refresh();
       },
       selectItem(item) {
         this.$emit("select", item)
