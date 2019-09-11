@@ -29,12 +29,20 @@
                 <img class="image" :src="currentSong.image" :class="cdCls">
               </div>
             </div>
+            <div class="playing-lyric-wrapper">
+              <div class="playing-lyric">{{playingLyric}}</div>
+            </div>
           </div>
           <Scroll class="middle-r" ref="lyricList" :data="currentLyric &&currentLyric.lines">
             <div class="lyric-wrapper">
               <div v-if="currentLyric">
                 <p ref="lyricLine" class="text" v-for="(line,index) in currentLyric.lines" :key="index" :class="{'current' : currentLineNum === index}">
                   {{line.txt}}
+                </p>
+              </div>
+              <div v-if="!currentLyric" class="text-wrapper">
+                <p class="text">
+                  歌词加载中
                 </p>
               </div>
             </div>
@@ -127,7 +135,8 @@
         currentTime: 0,
         currentLyric: null,
         currentLineNum: 0,
-        currentShow: 'cd'
+        currentShow: 'cd',
+        playingLyric: ''
       };
     },
     computed: {
@@ -180,6 +189,9 @@
         })
       },
       songUrl() {
+        if (this.percent > 0) {
+          this.currentTime = 0;
+        }
         if (this.songUrl && this.songUrl != ''){
           this.$nextTick(() => {
             this.$refs.audio.play();
@@ -231,19 +243,27 @@
         this.setPlayMode(mode);
       },
       onPorgressBarChange(percent) {
+        const currentTime = this.currentSong.duration * percent
         if (this.songUrl && this.songUrl != ''){
-          this.$refs.audio.currentTime = this.currentSong.duration * percent;
+          this.$refs.audio.currentTime = currentTime;
+        }
+        if(this.currentLyric){
+          this.currentLyric.seek(currentTime * 1000);
         }
       },
       prev(){
         if (!this.songReady) {
           return ;
         }
-        let index = this.currentIndex - 1;
-        if (index === -1){
-          index = this.playList.length - 1;
+        if (this.playList.length !== 1){
+          let index = this.currentIndex - 1;
+          if (index === -1){
+            index = this.playList.length - 1;
+          }
+          this.setCurrentIndex(index);
+        } else {
+          this.loop();
         }
-        this.setCurrentIndex(index);
         if (!this.playing){
           this.setPlayingState(!this.playing);
         }
@@ -251,21 +271,28 @@
       },
       togglePlaying() {
         this.setPlayingState(!this.playing);
+        if (this.currentLyric){
+          this.currentLyric.togglePlay();
+        }
       },
       next(){
         if (!this.songReady) {
           return ;
         }
         let index = 0
-        if (this.mode === playMode.random){
-          index = Math.random() * this.playList.length | 0
+        if (this.playList.length !== 1){
+          if (this.mode === playMode.random){
+            index = Math.random() * this.playList.length | 0
+          } else {
+            index = this.currentIndex + 1;
+          }
+          if (index === this.playList.length){
+            index = 0;
+          }
+          this.setCurrentIndex(index);
         } else {
-          index = this.currentIndex + 1;
+          this.loop();
         }
-        if (index === this.playList.length){
-          index = 0;
-        }
-        this.setCurrentIndex(index);
         if (!this.playing){
           this.setPlayingState(!this.playing);
         }
@@ -274,6 +301,9 @@
       loop() {
         this.$refs.audio.currentTime = 0;
         this.$refs.audio.play();
+        if(this.currentLyric){
+          this.currentLyric.seek(0);
+        }
       },
       end() {
         if (this.mode === playMode.loop){
@@ -283,14 +313,25 @@
         }
       },
       getLyric() {
+        if (this.currentLyric){
+          this.currentLyric.stop();
+        }
+        this.currentLyric = null;
         this.currentSong.getLyric().then((lyric)=>{
           this.currentLyric = new Lyric(lyric, this.handlerLyric);
           if (this.playing){
             this.currentLyric.play();
           }
+        }).catch(() => {
+          this.currentLyric = null;
+          this.playingLyric = ''
+          this.currentLineNum = 0
         })
       },
       handlerLyric({lineNum, txt}) {
+        // console.log("TCL: handlerLyric -> txt", lyric)
+        // 回调不会自动释放
+        // lyric模块，通过new生成对象，传入的回调函数,setTimeOut在重新生成对象后并不会释放改回调函数，导致歌词显示跳跃
         this.currentLineNum = lineNum;
         if (lineNum > 5){
           let lineEl = this.$refs.lyricLine[lineNum-5]
@@ -300,6 +341,7 @@
         } else {
           this.$refs.lyricList.scrollTo(0, 0, 1000);
         }
+        this.playingLyric = txt;
       },
       enter(el, done) {
         const {x,y,scale} = this._getPosAndScale();
@@ -504,8 +546,7 @@
               height: 100%
               box-sizing: border-box
               border: 10px solid rgba(255, 255, 255, 0.1)
-              border-radius: 50%
-              
+              border-radius: 50%          
             .image
               // position absolute
               left 0
@@ -517,6 +558,16 @@
                 animation: rotate 20s linear infinite
               &.pause
                 animation-play-state: paused
+          .playing-lyric-wrapper
+            width: 80%
+            margin: 30px auto 0 auto
+            overflow: hidden
+            text-align: center
+            .playing-lyric
+              height: 20px
+              line-height: 20px
+              font-size: $font-size-medium
+              color: $color-text-l
         .middle-r
           display: inline-block
           position: absolute;
@@ -536,6 +587,15 @@
               font-size: $font-size-medium
               &.current
                 color: $color-text
+          .text-wrapper
+            transform: translateX(-50%);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            .text
+              line-height: 32px
+              color: $color-text-l
+              font-size: $font-size-medium
       .bottom
         position absolute
         bottom 50px
