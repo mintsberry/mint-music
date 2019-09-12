@@ -16,7 +16,7 @@
         <div class="recommend-list">
           <h1 class="list-title">热门歌单推荐</h1>
           <ul>
-            <li class="item" v-for="(item, index) in discList" :key="index">
+            <li class="item" v-for="(item, index) in discList" :key="index" @click="selectItem(item)">
               <div class="icon">
                 <img width="60" height="60" v-lazy="item.imgurl" alt="">
               </div>
@@ -32,6 +32,9 @@
         <Loading></Loading>
       </div>
     </Scroll>
+    <transition name="fade">
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
@@ -42,6 +45,7 @@
   import Loading from '../../components/loading/Loading.vue';
   import Scroll from '../../components/scroll/Scroll.vue';
   import {playlistMixin} from '../../common/js/mixin'  
+  import {mapMutations} from "vuex"
   export default {
     components: {
         Slider,
@@ -88,7 +92,16 @@
           this.$refs.scroll.refresh();
           this.imgLoadFlag = true;
         }
-      }
+      },
+      selectItem(item) {
+        this.$router.push({
+          path: `/recommend/${item.dissid}`
+        })
+        this.setDisc(item);
+      },
+      ...mapMutations({
+        setDisc: "SET_DISC"
+      })
     },
 
 }
@@ -141,5 +154,11 @@
         width 100%
         top 50%
         transform translateY(-50%)
+    .fade-enter-active,
+    .fade-leave-active
+      transition all .2s linear 
+    .fade-enter,
+    .fade-leave-to
+      transform translateX(100%)
 
 </style>

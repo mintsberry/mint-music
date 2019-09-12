@@ -47,7 +47,23 @@ module.exports = {
         }).catch((e)=>{
           console.log(e);
         })
-      })
+      });
+      app.get('/api/getSongList', function(req, res) {
+        const url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg';
+        console.log(req.query.disstid);
+        axios.get(url, {
+          headers: {
+            referer: `https://y.qq.com/n/yqq/playlist/${req.query.disstid}.html`,
+            host: 'u.y.qq.com',
+            origin: 'https://y.qq.com'
+          },
+          params: req.query
+        }).then((response)=> {
+          res.json(response.data)
+        }).catch((e)=>{
+          console.log(e);
+        })
+      });
     }
   }
 }
