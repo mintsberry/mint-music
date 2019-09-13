@@ -2,14 +2,20 @@
   <div class="rank">
     <div class="toplist">
       <ul>
-        <li class="item">
-          <div class="icon">
-            <img src="" alt="" width="100" height="100">
-          </div>
-          <ul class="songlist">
-            <li class="song">
-              <span></span>
-              <span></span>
+        <li v-for="(item, index) in topGroup" :key="index" class="group">
+          <div class="top-title">{{item.groupName}}</div>
+          <ul>
+            <li class="item" v-for="(item, index) in item.toplist" :key="index">
+              <div class="icon">
+                <img :src="item.frontPicUrl" alt="" width="100" height="100">
+              </div>
+              <ul class="songlist">
+                <li class="song" v-for="(song, index) in item.song" :key="index">
+                  <span>{{index+1}}</span>&nbsp;
+                  <span class="song-text">{{song.title}}</span>
+                  <span> - {{song.singerName}}</span>
+                </li>
+              </ul>
             </li>
           </ul>
         </li>
@@ -34,6 +40,8 @@
 
     data () {
       return {
+        topGroup: [],
+        topList: []
       };
     },
     mixins: [ 
@@ -48,7 +56,7 @@
       _getTopList(){
         getTopList().then((resp)=>{
           if (resp.code === ERR_OK){
-            console.log(resp);
+            this.topGroup = resp.req_0.data.group
           }
         })
       }
@@ -57,6 +65,8 @@
 }
 </script>
 <style lang='stylus' scoped>
+  @import "../../common/stylus/variable.styl";
+  @import "../../common/stylus/mixin.styl";
   .rank
     position fixed
     width 100%
@@ -65,9 +75,39 @@
     .toplist
       height 100%
       overflow hidden
-      .item
-        display flex
-        margin 0 20px
-        padding-top 20px
+      .group
+        .top-title
+          height 30px
+          line-height 30px
+          text-align:center
+          color $color-text-l
+          font-size $font-size-medium-x
+          background $color-background           
+        .item
+          &:first-child
+            padding-top 0px
+          display flex
+          margin 0 20px
+          padding-top 20px
+          .icon
+            flex: 0 0 100px
+            width: 100px
+            height: 100px
+          .songlist
+            flex 1
+            display flex
+            flex-direction column
+            justify-content center
+            padding 0 20px
+            height 100px
+            overflow hidden
+            background $color-highlight-background
+            color $color-text-d
+            font-size $font-size-medium
+            .song
+              no-wrap()
+              line-height 26px
+            .song-text
+              color $color-text-ll
 
 </style>
