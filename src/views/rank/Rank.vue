@@ -1,6 +1,6 @@
 <template>
-  <div class="rank">
-    <div class="toplist">
+  <div class="rank" ref="rank">
+    <Scroll :data="topGroup" class="toplist" ref="scroll"> 
       <ul>
         <li v-for="(item, index) in topGroup" :key="index" class="group">
           <div class="top-title">{{item.groupName}}</div>
@@ -20,6 +20,9 @@
           </ul>
         </li>
       </ul>
+    </Scroll>
+    <div class="loading-wrapper" v-show="!topGroup.length">
+      <Loading></Loading>
     </div>
     <router-view></router-view>
   </div>
@@ -29,9 +32,13 @@
   import {mixin} from "../../common/js/mixin"
   import {getTopList} from "../../api/rank"
   import {ERR_OK} from '../../api/config'
+  import Scroll from '../../components/scroll/Scroll.vue'
+  import Loading from '../../components/loading/Loading.vue'
+  import {playlistMixin} from '../../common/js/mixin'
   export default {
     components: {
-      
+      Scroll,
+      Loading
     },
 
     props: {
@@ -45,7 +52,7 @@
       };
     },
     mixins: [ 
-      // mixin
+      playlistMixin
     ],
     computed: { 
     },
@@ -53,6 +60,11 @@
       this._getTopList()
     },
     methods: {
+      handlePlaylist (playlist) {
+        const bottom = playlist.length? '60px' : '';
+        this.$refs.rank.style.bottom = bottom;
+        this.$refs.scroll.refresh();
+      },
       _getTopList(){
         getTopList().then((resp)=>{
           if (resp.code === ERR_OK){
@@ -77,18 +89,18 @@
       overflow hidden
       .group
         .top-title
-          height 30px
-          line-height 30px
+          height 32px
+          line-height 32px
           text-align:center
           color $color-text-l
           font-size $font-size-medium-x
           background $color-background           
         .item
-          &:first-child
-            padding-top 0px
           display flex
           margin 0 20px
           padding-top 20px
+          &:first-child
+            padding-top 0px
           .icon
             flex: 0 0 100px
             width: 100px
@@ -109,5 +121,11 @@
               line-height 26px
             .song-text
               color $color-text-ll
-
+        &:last-child
+          padding-bottom 20px
+    .loading-wrapper
+      position absolute
+      width 100%
+      top 50%
+      transform translateY(-50%)
 </style>

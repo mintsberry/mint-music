@@ -1,5 +1,5 @@
 <template>
-  <div class="progress-circle">
+  <div class="progress-circle" @click.stop="click">
     <slot></slot>
     <svg :width="radius" :height="radius" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
       <circle class="progress-background" r="50" cx="50" cy="50" fill="transparent"/>
@@ -36,7 +36,9 @@
       }
     },
     methods: {
-      
+      click() {
+        this.$emit('clickProgress');
+      }
     },
 }
 </script>

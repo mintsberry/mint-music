@@ -91,7 +91,7 @@
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-          <ProgressCircle :radius="32" :percent="percent">
+          <ProgressCircle :radius="32" :percent="percent" @clickProgress="togglePlaying">
             <i class="icon-mini" :class="miniIcon" @click.stop="togglePlaying"></i>
           </ProgressCircle>
           
