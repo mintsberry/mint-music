@@ -169,6 +169,9 @@
     },
     watch: {
       currentSong(){
+        if (this.percent > 0) {
+          this.currentTime = 0;
+        }
         getSong(this.currentSong.mid).then((resp) => {
           if (resp.code === 0){
             if (resp.req_0){
@@ -189,9 +192,6 @@
         })
       },
       songUrl() {
-        if (this.percent > 0) {
-          this.currentTime = 0;
-        }
         if (this.songUrl && this.songUrl != ''){
           this.$nextTick(() => {
             this.$refs.audio.play();

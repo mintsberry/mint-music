@@ -50,7 +50,6 @@ module.exports = {
       });
       app.get('/api/getSongList', function(req, res) {
         const url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg';
-        console.log(req.query.disstid);
         axios.get(url, {
           headers: {
             referer: `https://y.qq.com/n/yqq/playlist/${req.query.disstid}.html`,
@@ -64,6 +63,32 @@ module.exports = {
           console.log(e);
         })
       });
+      app.get("/api/getRank", function(req,res) {
+        const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg?_=1568362317751'
+        axios.post(url, {
+          "req_0": {
+            "module": "musicToplist.ToplistInfoServer",
+            "method": "GetAll",
+            "param": {}
+          },
+          "comm": {
+            "g_tk": 5381,
+            "uin": 0,
+            "format": "json",
+            "ct": 23,
+            "cv": 0
+          }
+        },{
+          headers: {
+            referer: 'https://y.qq.com/m/index.html',
+            host: 'u.y.qq.com'
+          }
+        }).then((response)=> {
+          res.json(response.data)
+        }).catch((e)=>{
+          console.log(e);
+        })
+      })
     }
   }
 }

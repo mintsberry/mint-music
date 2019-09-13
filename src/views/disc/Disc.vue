@@ -41,14 +41,14 @@
         getSongList(this.disc.dissid).then((res) => {
           if (res.code === ERR_OK){
             let data = res.cdlist[0].songlist;
-            this.songs = this._normalizeSongs(res.cdlist[0].songlist);
+            this.songs = this._normalizeSongs(data);
           }
         })
       },
       _normalizeSongs(list) {
         let ret = [];
         list.forEach(musicData => {
-          if (musicData.mid && musicData.album && musicData.isvip === 0) {
+          if (musicData.mid && musicData.album) {
             ret.push(new Song({
               id:musicData.id,
               mid: musicData.mid, 
