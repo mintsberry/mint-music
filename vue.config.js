@@ -88,6 +88,20 @@ module.exports = {
         }).catch((e)=>{
           console.log(e);
         })
+      });
+      app.get('/api/getRankList',function(req,res) {
+        const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
+        return axios.get(url,{
+          headers: {
+            referer: 'https://u.y.qq.com',
+            host: 'u.y.qq.com'
+          },
+          params: req.query
+        }).then((resp)=>{
+          res.json(resp.data)
+        }).catch((e)=>{
+          console.log(e);
+        })
       })
     }
   }

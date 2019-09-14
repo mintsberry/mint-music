@@ -5,7 +5,7 @@
         <li v-for="(item, index) in topGroup" :key="index" class="group">
           <div class="top-title">{{item.groupName}}</div>
           <ul>
-            <li class="item" v-for="(item, index) in item.toplist" :key="index">
+            <li class="item" v-for="(item, index) in item.toplist" :key="index" @click="selectItem(item)">
               <div class="icon">
                 <img :src="item.frontPicUrl" alt="" width="100" height="100">
               </div>
@@ -24,7 +24,9 @@
     <div class="loading-wrapper" v-show="!topGroup.length">
       <Loading></Loading>
     </div>
-    <router-view></router-view>
+    <transition name="fade">
+      <router-view></router-view>
+    </transition>  
   </div>
 </template>
 
@@ -35,6 +37,7 @@
   import Scroll from '../../components/scroll/Scroll.vue'
   import Loading from '../../components/loading/Loading.vue'
   import {playlistMixin} from '../../common/js/mixin'
+  import {mapMutations} from 'vuex'
   export default {
     components: {
       Scroll,
@@ -65,13 +68,23 @@
         this.$refs.rank.style.bottom = bottom;
         this.$refs.scroll.refresh();
       },
+      selectItem(item) {
+        this.setTopList(item);
+        this.$router.push({
+          path: `/rank/${item.topId}`
+        })
+      },
       _getTopList(){
         getTopList().then((resp)=>{
           if (resp.code === ERR_OK){
             this.topGroup = resp.req_0.data.group
           }
         })
-      }
+      },
+      ...mapMutations({
+        setTopList: 'SET_TOP_LIST'
+        }
+      )
     },
 
 }
@@ -128,4 +141,10 @@
       width 100%
       top 50%
       transform translateY(-50%)
+    .fade-enter-active,
+    .fade-leave-active
+      transition all .2s linear 
+    .fade-enter,
+    .fade-leave-to
+      transform translateX(100%)
 </style>

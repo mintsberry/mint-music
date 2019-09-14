@@ -2,7 +2,7 @@
   <MusicList :title="title" :bgImage="bgImage" :songs="songs"></MusicList>
 </template>
 <script> 
-  import MusicList from '../music-list/MusicList.vue'
+  import MusicList from '../musicList/MusicList.vue'
   import {mapGetters} from 'vuex'
   import {getSongList} from '../../api/recommend'
   import {ERR_OK} from '../../api/config'

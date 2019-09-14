@@ -10,7 +10,7 @@
   import {ERR_OK} from '../../api/config'
   import {createSong} from '../../common/js/song'
   import {getSong} from '../../api/song'
-  import MusicList from '../music-list/MusicList.vue'
+  import MusicList from '../musicList/MusicList.vue'
   export default {
     components: {
       MusicList
