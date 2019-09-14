@@ -1,6 +1,6 @@
 <template>
   <div class="slide">
-    <MusicList :title="topList.title" :bgImage="bgImage" :songs="songs"></MusicList>
+    <MusicList :title="topList.title" :bgImage="bgImage" :songs="songs" :rank="rank"></MusicList>
   </div>
 </template>
 <script>
@@ -18,7 +18,8 @@
     },
     data () {
       return {
-        songs: []
+        songs: [],
+        rank: true
       };
     },
     computed: {
@@ -36,13 +37,12 @@
     },
     methods: {
       _getMusicList(){
-        if (!this.topList.id){
+        if (this.topList.id){
           this.$router.push('/rank');
         }
         getMusicList(this.topList.topId).then((resp) => {
           if (resp.code === ERR_OK){
             this.songs = this._normalizeSongs(resp.detail.data.songInfoList)
-            console.log("TCL: _getMusicList -> this.songs", this.songs)
           }
         })
       },
