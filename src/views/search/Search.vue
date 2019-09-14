@@ -1,7 +1,7 @@
 <template>
   <div class="search">
     <div class="search-box-wrapper">
-      <SearchBox ref="searchBox"></SearchBox>
+      <SearchBox ref="searchBox" @query="onQueryChange"></SearchBox>
     </div>
     <div class="shortcut-wrapper">
       <div class="shortcut">
@@ -15,6 +15,9 @@
         </div>
       </div>
     </div>
+    <div class="search-result">
+      <Suggest :query="query"></Suggest>
+    </div>
   </div>
 </template>
 
@@ -22,9 +25,11 @@
   import SearchBox from "../../components/searchBox/SearchBox.vue";
   import {getHotKey} from '../../api/search';
   import {ERR_OK} from '../../api/config';
+  import Suggest from '../suggest/Suggest.vue'
   export default {
     components: {
-      SearchBox
+      SearchBox,
+      Suggest
     },
 
     props: {
@@ -33,7 +38,8 @@
 
     data () {
       return {
-        hotKey: []
+        hotKey: [],
+        query: ''
       };
     },
 
@@ -47,6 +53,9 @@
       addQuery(query){
         this.$refs.searchBox.setQuery(query);
       },
+      onQueryChange(query) {
+        this.query = query
+      },
       _getHotKey() {
         getHotKey().then((resp) => {
           if(resp.code == ERR_OK) {
@@ -56,7 +65,6 @@
             nums.forEach((item)=>{
               this.hotKey.push(hotKey[item]);
             })
-            console.log(this.hotKey);
           }
         })
       },

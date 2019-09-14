@@ -102,6 +102,20 @@ module.exports = {
         }).catch((e)=>{
           console.log(e);
         })
+      });
+      app.get('/api/search',function(req,res) {
+        const url = 'https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp';
+        return axios.get(url,{
+          headers: {
+            referer: 'https://u.y.qq.com',
+            host: 'u.y.qq.com'
+          },
+          params: req.query
+        }).then((resp)=>{
+          res.json(resp.data)
+        }).catch((e)=>{
+          console.log(e);
+        })
       })
     }
   }
