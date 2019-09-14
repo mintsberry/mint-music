@@ -1,8 +1,8 @@
 <template>
   <div class="search-box">
     <i class="icon-search"></i>
-    <input class="box">
-    <i class="icon-dismiss"></i>
+    <input class="box" v-model="query" :placeholder="placeholder">
+    <i v-show="query" class="icon-dismiss" @click="clear"></i>
   </div>
 </template>
 <script>
@@ -11,17 +11,31 @@
       
     },
     props: {
-      
+      placeholder: {
+        type: String,
+        default: '搜索歌曲，歌手'
+      }
     },
     data () {
       return {
+        query: ''
       };
     },
     computed: {
       
     },
+    created() {
+      this.$watch('query', (newQuery)=> {
+        this.$emit('query',newQuery)
+      })
+    },
     methods: {
-      
+      setQuery(query) {
+        this.query = query
+      },
+      clear(){
+        this.query = ''
+      }
     },
 }
 </script>

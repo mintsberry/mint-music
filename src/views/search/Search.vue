@@ -1,13 +1,27 @@
 <template>
   <div class="search">
     <div class="search-box-wrapper">
-      <SearchBox></SearchBox>
+      <SearchBox ref="searchBox"></SearchBox>
+    </div>
+    <div class="shortcut-wrapper">
+      <div class="shortcut">
+        <div class="hot-key">
+          <h1 class="title">热门搜索</h1>
+          <ul>
+            <li class="item" v-for="(item, index) in hotKey" :key="index" @click="addQuery(item.k)">
+              <span>{{item.k}}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
   import SearchBox from "../../components/searchBox/SearchBox.vue";
+  import {getHotKey} from '../../api/search';
+  import {ERR_OK} from '../../api/config';
   export default {
     components: {
       SearchBox
@@ -19,18 +33,75 @@
 
     data () {
       return {
+        hotKey: []
       };
     },
 
     computed: {
       
     },
-
+    created() {
+      this._getHotKey();
+    },
     methods: {
-      
+      addQuery(query){
+        this.$refs.searchBox.setQuery(query);
+      },
+      _getHotKey() {
+        getHotKey().then((resp) => {
+          if(resp.code == ERR_OK) {
+            let hotKey = resp.data.hotkey
+            let nums = this._randGetNum(hotKey.length, 10)
+            this.hotKey = [];
+            nums.forEach((item)=>{
+              this.hotKey.push(hotKey[item]);
+            })
+            console.log(this.hotKey);
+          }
+        })
+      },
+      _randGetNum(max, num) {
+        let ret = [];
+        while (ret.length < num) {
+          let ran = Math.random() * max | 0
+          let flag = ret.every((item)=>{
+            return ran !== item;
+          })
+          if (flag) {
+            ret.push(ran);
+          }
+        }
+        return ret;
+      }
     },
 
 }
 </script>
 <style lang='stylus' scoped>
+  @import '../../common/stylus/variable.styl';
+  .search
+    .search-box-wrapper
+      margin 20px
+    .shortcut-wrapper
+      position fixed
+      top 178px
+      bottom 0
+      width 100%
+      .shortcut
+          height 100%
+          overflow hidden
+          .hot-key
+            margin 0 20px 20px 20px
+            .title
+              margin-bottom 20px
+              font-size $font-size-medium
+              color $color-text-l
+            .item
+              display inline-block
+              padding 5px 10px
+              margin 0 15px 10px 0
+              border-radius 6px
+              background $color-highlight-background
+              font-size $font-size-medium
+              color $color-text-d
 </style>
