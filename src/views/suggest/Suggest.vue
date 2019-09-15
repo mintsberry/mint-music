@@ -1,5 +1,10 @@
 <template>
-  <Scroll class="suggest">
+  <Scroll class="suggest" 
+  :data="result" 
+  :pullup="pullup"
+  @scrollToEnd="searchMore"
+  ref="scroll"
+  >
     <div class="suggest-list">
       <li class="suggest-item" v-for="(item, index) in result" :key="index">
         <div class="icon">
@@ -9,6 +14,7 @@
           <p class="text" v-html="getDisplayName(item)"></p>
         </div>
       </li>
+      <Loading v-show="hasMore"></Loading>
     </div>
   </Scroll>
 </template>
@@ -18,10 +24,12 @@
   import {filterSinger} from "../../common/js/song"
   import Scroll from '../../components/scroll/Scroll.vue'
   import {createSong} from '../../common/js/song'
+  import Loading from '../../components/loading/Loading.vue'
   const TYEP_SINGER = 'singer'
   export default {
     components: {
-      Scroll
+      Scroll,
+      Loading
     },
     props: {
       query: {
@@ -36,7 +44,9 @@
     data () {
       return {
         page: 1,
-        result: []
+        result: [],
+        pullup: true,
+        hasMore: true
       };
     },
     computed: {
@@ -49,9 +59,25 @@
     },
     methods: {
       search() {
+        this.hasMore = true;
+        this.page = 1;
+        this.$refs.scroll.scrollTo(0,0);
         search(this.query, this.page, 1).then((resp)=>{
           if (resp.code === ERR_OK) {
             this.result = this._genResult(resp.data);
+            this._checkMore(resp.data);
+          }
+        })
+      },
+      searchMore() {
+        if (!this.hasMore) {
+          return ;
+        }
+        this.page++
+        search(this.query, this.page, 0).then((resp)=>{
+          if (resp.code === ERR_OK) {
+            this.result = this.result.concat(this._genResult(resp.data));
+            this._checkMore(resp.data);
           }
         })
       },
@@ -69,6 +95,12 @@
           return `${item.name}-${item.singer}`
         }
       },
+      _checkMore(data) {
+        const song = data.song;
+        if (!song.list.length || (song.curnum + song.curpage * 20) > song.totalnum){
+          this.hasMore = false;
+        }
+      },
       _genResult(data) {
         let ret = [];
         if (data.zhida && data.zhida.singermid){
@@ -82,7 +114,7 @@
       _normalizeSongs(list) {
         let ret = [];
         list.forEach(element => {
-          if (element.songid && element.albumid) {
+          if (element.songid) {
             ret.push(createSong(element))
           }
         });
