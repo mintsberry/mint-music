@@ -16,8 +16,11 @@
       </div>
     </div>
     <div class="search-result" v-show="query">
-      <Suggest :query="query"></Suggest>
+      <Suggest :query="query" @listScroll="blurInput"></Suggest>
     </div>
+    <transition name='fade'>
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
@@ -68,6 +71,9 @@
           }
         })
       },
+      blurInput() {
+        this.$refs.searchBox.blur();
+      },
       _randGetNum(max, num) {
         let ret = [];
         while (ret.length < num) {
@@ -88,6 +94,12 @@
 <style lang='stylus' scoped>
   @import '../../common/stylus/variable.styl';
   .search
+    .fade-enter-active,
+    .fade-leave-active
+      transition all .2s linear 
+    .fade-enter,
+    .fade-leave-to
+      transform translateX(100%)
     .search-box-wrapper
       margin 20px
     .shortcut-wrapper

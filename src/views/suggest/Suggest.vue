@@ -2,11 +2,13 @@
   <Scroll class="suggest" 
   :data="result" 
   :pullup="pullup"
+  :beforeScroll="beforeScroll"
   @scrollToEnd="searchMore"
+  @beforeScroll="listScroll"
   ref="scroll"
   >
     <div class="suggest-list">
-      <li class="suggest-item" v-for="(item, index) in result" :key="index">
+      <li class="suggest-item" v-for="(item, index) in result" :key="index" @click="selectItem(item)">
         <div class="icon">
           <i :class="getIconCls(item)"></i>
         </div>
@@ -15,6 +17,9 @@
         </div>
       </li>
       <Loading v-show="hasMore"></Loading>
+    </div>
+    <div v-show="!hasMore && !result.length" class="no-result-wrapper">
+      <NoResult :title="title"></NoResult>
     </div>
   </Scroll>
 </template>
@@ -25,11 +30,15 @@
   import Scroll from '../../components/scroll/Scroll.vue'
   import {createSong} from '../../common/js/song'
   import Loading from '../../components/loading/Loading.vue'
+  import {mapMutations,mapActions} from 'vuex'
+  import Singer from '../../common/js/singer'
+  import NoResult from '../../components/noResult/NoResult.vue'
   const TYEP_SINGER = 'singer'
   export default {
     components: {
       Scroll,
-      Loading
+      Loading,
+      NoResult
     },
     props: {
       query: {
@@ -46,7 +55,9 @@
         page: 1,
         result: [],
         pullup: true,
-        hasMore: true
+        hasMore: true,
+        beforeScroll: true,
+        title: '抱歉,暂无搜索结果'
       };
     },
     computed: {
@@ -61,6 +72,7 @@
       search() {
         this.hasMore = true;
         this.page = 1;
+        this.result = [];
         this.$refs.scroll.scrollTo(0,0);
         search(this.query, this.page, 1).then((resp)=>{
           if (resp.code === ERR_OK) {
@@ -95,6 +107,23 @@
           return `${item.name}-${item.singer}`
         }
       },
+      selectItem(item) {
+        if(item.type === TYEP_SINGER) {
+          const singer = new Singer({
+            id: item.singermid,
+            name: item.sigername
+          })
+          this.$router.push({
+            path: `/search/${singer.id}`
+          })
+          this.setSinger(singer);
+        } else {
+          this.insertSong(item);
+        }
+      },
+      listScroll(item) {
+        this.$emit("listScroll")
+      },
       _checkMore(data) {
         const song = data.song;
         if (!song.list.length || (song.curnum + song.curpage * 20) > song.totalnum){
@@ -119,7 +148,13 @@
           }
         });
         return ret;
-      }
+      },
+      ...mapMutations({
+        setSinger: 'SET_SINGER'
+      }),
+      ...mapActions([
+        "insertSong"
+      ])
     },
 }
 </script>
