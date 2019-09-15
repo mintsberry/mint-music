@@ -1,5 +1,5 @@
 <template>
-  <div class="suggest">
+  <Scroll class="suggest">
     <div class="suggest-list">
       <li class="suggest-item" v-for="(item, index) in result" :key="index">
         <div class="icon">
@@ -10,16 +10,18 @@
         </div>
       </li>
     </div>
-  </div>
+  </Scroll>
 </template>
 <script>
   import {search} from '../../api/search'
   import {ERR_OK} from '../../api/config'
   import {filterSinger} from "../../common/js/song"
+  import Scroll from '../../components/scroll/Scroll.vue'
+  import {createSong} from '../../common/js/song'
   const TYEP_SINGER = 'singer'
   export default {
     components: {
-      
+      Scroll
     },
     props: {
       query: {
@@ -49,14 +51,11 @@
       search() {
         search(this.query, this.page, 1).then((resp)=>{
           if (resp.code === ERR_OK) {
-            console.log("TCL: search -> resp.code", resp)
             this.result = this._genResult(resp.data);
-            console.log("TCL: search -> this.result", this.result)
           }
         })
       },
       getIconCls(item){
-        console.log(item);
         if (item.type === TYEP_SINGER) {
           return 'icon-mine'
         } else {
@@ -67,7 +66,7 @@
         if (item.type === TYEP_SINGER) {
           return item.singername
         } else {
-          return `${item.songname}-${filterSinger(item.singer)}`
+          return `${item.name}-${item.singer}`
         }
       },
       _genResult(data) {
@@ -76,9 +75,18 @@
           ret.push({...data.zhida, ...{type: TYEP_SINGER}})
         }
         if (data.song) {
-          ret = ret.concat(data.song.list)
+          ret = ret.concat(this._normalizeSongs(data.song.list))
         }
         return ret
+      },
+      _normalizeSongs(list) {
+        let ret = [];
+        list.forEach(element => {
+          if (element.songid && element.albumid) {
+            ret.push(createSong(element))
+          }
+        });
+        return ret;
       }
     },
 }
@@ -89,5 +97,28 @@
     .suggest
       height 100%
       overflow hidden
-      
+      .suggest-list
+        padding 0 30px
+        .suggest-item
+          display flex
+          align-items center
+          padding-bottom 20px
+        .icon
+          flex 0 0 30px
+          width 30px
+          [class^="icon-"]
+            font-size 14px
+            color $color-text-d
+        .name
+          flex 1
+          font-size $font-size-medium
+          color $color-text-d
+          overflow hidden
+          .text
+            no-wrap()
+    .no-result-wrapper
+      position absolute
+      width 100%
+      top: 50%
+      transform translateY(-50%)
 </style>

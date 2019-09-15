@@ -3,7 +3,7 @@
     <div class="search-box-wrapper">
       <SearchBox ref="searchBox" @query="onQueryChange"></SearchBox>
     </div>
-    <div class="shortcut-wrapper">
+    <div class="shortcut-wrapper"  v-show="!query">
       <div class="shortcut">
         <div class="hot-key">
           <h1 class="title">热门搜索</h1>
@@ -15,7 +15,7 @@
         </div>
       </div>
     </div>
-    <div class="search-result">
+    <div class="search-result" v-show="query">
       <Suggest :query="query"></Suggest>
     </div>
   </div>
@@ -112,4 +112,9 @@
               background $color-highlight-background
               font-size $font-size-medium
               color $color-text-d
+    .search-result
+      position fixed
+      width 100%
+      top 178px
+      bottom 0
 </style>
