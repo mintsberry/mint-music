@@ -16,11 +16,11 @@
         <div class="search-history" v-show="searchHistory.length">
           <h1 class="title">
             <span class="text">搜索历史</span>
-            <span class="clear">
+            <span class="clear" @click="deleteAll">
               <i class="icon-clear"></i>
             </span>
           </h1>
-          <SearchList :searches="searchHistory"></SearchList>
+          <SearchList :searches="searchHistory" @select="addQuery" @delete="deleteOne"></SearchList>
         </div>
       </div>
     </div>
@@ -73,6 +73,12 @@
       onQueryChange(query) {
         this.query = query
       },
+      deleteOne(item) {
+        this.deleteSearchHistory(item)
+      },
+      deleteAll() {
+        this.clearSearchHistory();
+      },
       saveSearch() {
         this.saveSearchHistory(this.query)
       },
@@ -105,7 +111,9 @@
         return ret;
       },
       ...mapActions([
-        'saveSearchHistory'
+        'saveSearchHistory',
+        'deleteSearchHistory',
+        'clearSearchHistory'
       ])
     },
 
