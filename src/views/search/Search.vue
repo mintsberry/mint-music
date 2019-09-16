@@ -76,8 +76,7 @@
         })
       },
       blurInput() {
-        this.$refs.searchBox;
-        console.log("TCL: blurInput -> this.$refs.searchBox", this.$refs.searchBox)
+        this.$refs.searchBox.blur();
       },
       _randGetNum(max, num) {
         let ret = [];

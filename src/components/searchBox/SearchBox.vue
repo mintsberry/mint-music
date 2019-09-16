@@ -37,7 +37,9 @@
       clear(){
         this.query = ''
       },
-
+      blur() {
+      this.$refs.query.blur()
+      }
     },
 }
 </script>
