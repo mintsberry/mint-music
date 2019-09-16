@@ -16,7 +16,7 @@
         <div class="search-history" v-show="searchHistory.length">
           <h1 class="title">
             <span class="text">搜索历史</span>
-            <span class="clear" @click="deleteAll">
+            <span class="clear" @click="showConfirm">
               <i class="icon-clear"></i>
             </span>
           </h1>
@@ -27,6 +27,7 @@
     <div class="search-result" v-show="query">
       <Suggest :query="query" @listScroll="blurInput" @select="saveSearch"></Suggest>
     </div>
+    <Confirm ref="confirm" :text="'是否清空所有搜索历史'" :confirmBtnText="'清空'" @confirm="clearSearchHistory"></Confirm>
     <transition name='fade'>
       <router-view></router-view>
     </transition>
@@ -40,11 +41,13 @@
   import Suggest from '../suggest/Suggest.vue'
   import SearchList from '../../components/searchList/SearchList.vue'
   import {mapActions, mapGetters} from 'vuex';
+  import Confirm from '../../components/confirm/Confirm.vue'
   export default {
     components: {
       SearchBox,
       Suggest,
-      SearchList
+      SearchList,
+      Confirm
     },
 
     props: {
@@ -81,6 +84,9 @@
       },
       saveSearch() {
         this.saveSearchHistory(this.query)
+      },
+      showConfirm() {
+        this.$refs.confirm.show();
       },
       _getHotKey() {
         getHotKey().then((resp) => {
