@@ -30,16 +30,14 @@
         this.$emit('query',newQuery)
       },200));
     },
-    blur() {
-      this.$refs.query.blur()
-    },
     methods: {
       setQuery(query) {
         this.query = query
       },
       clear(){
         this.query = ''
-      }
+      },
+
     },
 }
 </script>

@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="search-result" v-show="query">
-      <Suggest :query="query" @listScroll="blurInput"></Suggest>
+      <Suggest :query="query" @listScroll="blurInput" @select="saveSearch"></Suggest>
     </div>
     <transition name='fade'>
       <router-view></router-view>
@@ -29,6 +29,7 @@
   import {getHotKey} from '../../api/search';
   import {ERR_OK} from '../../api/config';
   import Suggest from '../suggest/Suggest.vue'
+  import {mapActions} from 'vuex';
   export default {
     components: {
       SearchBox,
@@ -59,6 +60,9 @@
       onQueryChange(query) {
         this.query = query
       },
+      saveSearch() {
+        this.saveSearchHistory(this.query)
+      },
       _getHotKey() {
         getHotKey().then((resp) => {
           if(resp.code == ERR_OK) {
@@ -72,7 +76,8 @@
         })
       },
       blurInput() {
-        this.$refs.searchBox.blur();
+        this.$refs.searchBox;
+        console.log("TCL: blurInput -> this.$refs.searchBox", this.$refs.searchBox)
       },
       _randGetNum(max, num) {
         let ret = [];
@@ -86,7 +91,10 @@
           }
         }
         return ret;
-      }
+      },
+      ...mapActions([
+        'saveSearchHistory'
+      ])
     },
 
 }

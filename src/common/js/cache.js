@@ -38,7 +38,6 @@ export function saveSearch(query) {
   storage.set(SEARCH_KEY, searches)
   return searches
 }
-
 export function deleteSearch(query) {
   let searches = storage.get(SEARCH_KEY, [])
   deleteFromArray(searches, (item) => {
