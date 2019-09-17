@@ -1,58 +1,116 @@
 <template>
   <transition name="list-fade">
-    <div class="playlist">
-      <div class="list-wrapper">
+    <div class="playlist" v-show="showFlag" @click="hide">
+      <div class="list-wrapper" @click.stop>
         <div class="list-header">
           <h1 class="title">
             <i class="icon"></i>
             <span class="text"></span>
-            <span class="clear"><i class="icon-clear"></i></span>
+            <span class="clear" @click="showConfirm"><i class="icon-clear"></i></span>
           </h1>
         </div>
-        <div class="list-content">
-          <ul>
-            <li class="item">
-              <i class="current"></i>
-              <span class="text"></span>
+        <Scroll class="list-content" :data="playList" ref="scroll">
+          <transition-group name="list" tag="ul">
+            <li class="item" v-for="(item,index) in playList" :key="index" @click="selectItem(item,index)" ref="listItem">
+              <i class="current" :class="getCurrentIcon(item)"></i>
+              <span class="text">{{item.name}}</span>
               <span class="like">
                 <i class="icon-not-favorite"></i>
               </span>
-              <span  class="delete">
+              <span  class="delete" @click.stop="deleteOne(item)">
                 <i class="icon-delete"></i>
               </span>
             </li>
-          </ul>
-        </div>
+          </transition-group>
+        </Scroll>
         <div class="list-operate">
           <div class="add">
             <i class="icon-add"></i>
             <span class="text">添加歌曲到队列</span>
           </div>
         </div>
-        <div class="list-close">
+        <div class="list-close" @click="hide">
           <span>关闭</span>
         </div>
       </div>
+      <Confirm ref="confirm" text="是否清空播放列表" confirmBtnText="清空" @confirm="confirmClear"></Confirm>
     </div>
   </transition>
 </template>
 <script>
+  import {mapGetters, mapMutations, mapActions} from 'vuex';
+  import Confirm from '../../components/confirm/Confirm.vue';
+  import Scroll from '../../components/scroll/Scroll.vue';
   export default {
     components: {
-      
+      Scroll,
+      Confirm
     },
     props: {
       
     },
     data () {
       return {
+        showFlag: false
       };
     },
     computed: {
-      
+      ...mapGetters([
+        'playList',
+        'currentSong',
+        'currentIndex'
+      ])
+    },
+    watch:{
+      currentIndex(newIndex, oldIndex) {
+        if (!this.showFlag || newIndex === oldIndex){
+          return 
+        }
+        this.scrollToCurrent(newIndex);
+      }
     },
     methods: {
-      
+      show(){
+        this.showFlag = true;
+        setTimeout(() => {
+          this.$refs.scroll.refresh();
+          this.scrollToCurrent(this.currentIndex);
+        }, 20);
+      },
+      scrollToCurrent(current){
+        this.$refs.scroll.scrollToElement(this.$refs.listItem[current], 300);
+      },
+      hide() {
+        this.showFlag = false
+      },
+      getCurrentIcon(item) {
+        return this.currentSong.id === item.id ? 'icon-play' : '';
+      },
+      selectItem(item,index) {
+        this.setCurrentIndex(index);
+        this.setPlayingState(true);
+      },
+      deleteOne(item){
+        this.deleteSong(item);
+        if (!this.playList.length){
+          this.hide();
+        }
+      },
+      showConfirm() {
+        this.$refs.confirm.show();
+      },
+      confirmClear(){
+        this.deleteSongList();
+        this.hide();
+      },
+      ...mapMutations({
+        'setCurrentIndex': 'SET_CURRENT_INDEX',
+        'setPlayingState': 'SET_PLAYING_STATE',
+      }),
+      ...mapActions([
+        'deleteSong',
+        'deleteSongList'
+      ])
     },
 }
 </script>
@@ -109,7 +167,7 @@
           display flex;
           align-items center
           height 40px
-          padding 0 30px 0 20px
+          padding 0 20px 0 10px
           overflow hidden
           &.list-enter-active,
           &.list-leave-active
@@ -120,7 +178,8 @@
           .current
             flex 0 0 20px
             width 20px
-            font-size $color-theme-d
+            margin-right 10px
+            color $color-theme-d
           .text
             flex 1
             no-wrap()

@@ -1,5 +1,5 @@
 <template>
-  <transition name="confirm-fade">
+  <transition name="confirm-fade" @click.stop>
     <div class="confirm" v-show="showFlag">
       <div class="confirm-wrapper">
         <div class="confirm-content">

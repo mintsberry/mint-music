@@ -96,12 +96,12 @@
           </ProgressCircle>
           
         </div>
-        <div class="control">
+        <div class="control" @click.stop="showPlayList">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
-    <PlayList></PlayList>
+    <PlayList ref="playList"></PlayList>
     <audio :src="songUrl" 
       ref="audio"
       @canplay="ready"
@@ -171,7 +171,16 @@
       ])
     },
     watch: {
-      currentSong(){
+      currentSong(newSong, oldSong){
+        if (!newSong.id || newSong.id===oldSong.id){
+          return;
+        }
+        if (this.currentLyric) {
+          this.currentLyric.stop();
+          this.currentTime = 0
+          this.currentLyric = null;
+          this.currentLineNum = 0;
+        }
         if (this.percent > 0) {
           this.currentTime = 0;
         }
@@ -345,6 +354,9 @@
           this.$refs.lyricList.scrollTo(0, 0, 1000);
         }
         this.playingLyric = txt;
+      },
+      showPlayList() {
+        this.$refs.playList.show();
       },
       enter(el, done) {
         const {x,y,scale} = this._getPosAndScale();
