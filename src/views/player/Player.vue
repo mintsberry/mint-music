@@ -101,6 +101,7 @@
         </div>
       </div>
     </transition>
+    <PlayList></PlayList>
     <audio :src="songUrl" 
       ref="audio"
       @canplay="ready"
@@ -119,12 +120,14 @@
   import {playMode} from '../../common/js/config'
   import Lyric from 'lyric-parser'
   import Scroll from '../../components/scroll/Scroll.vue'
+  import PlayList from '../playList/PlayList.vue';
   import { get } from 'http';
   export default {
     components: {
       ProgressBar,
       ProgressCircle,
-      Scroll
+      Scroll,
+      PlayList
     },
     props: {
     },
