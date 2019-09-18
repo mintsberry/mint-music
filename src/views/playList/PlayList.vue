@@ -34,6 +34,7 @@
         </div>
       </div>
       <Confirm ref="confirm" text="是否清空播放列表" confirmBtnText="清空" @confirm="confirmClear"></Confirm>
+      <AddSong ref="addSong"></AddSong>
     </div>
   </transition>
 </template>
@@ -43,10 +44,12 @@
   import Scroll from '../../components/scroll/Scroll.vue';
   import {playerMixin} from '../../common/js/mixin'
   import {playMode} from '../../common/js/config';
+  import AddSong from '../../components/addSong/AddSong.vue'
   export default {
     components: {
       Scroll,
-      Confirm
+      Confirm,
+      AddSong
     },
     props: {
       

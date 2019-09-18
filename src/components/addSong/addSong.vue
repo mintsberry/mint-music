@@ -1,6 +1,6 @@
 <template>
   <transition name="silde">
-    <div class="add-song">
+    <div class="add-song" v-show="showFlag">
       <div class="header">
         <h1 class="title">添加歌曲到列表</h1>
         <div class="close">
@@ -23,10 +23,16 @@
     },
     data () {
       return {
+        showFlag: false
       };
     },
     computed: {
-      
+      show() {
+        this.showFlag = true;
+      },
+      hide() {
+        this.showFlag = false;
+      },
     },
     methods: {
       
@@ -34,4 +40,55 @@
 }
 </script>
 <style lang='stylus' scoped>
+  @import '../../common/stylus/mixin.styl';
+  @import '../../common/stylus/variable.styl';
+  .add-song
+    position fixed
+    top 0
+    bottom 0
+    width 100%
+    z-index 200
+    background $color-background
+    &.slide-enter-active,
+    &.slide-leave-active
+      transition all .3s
+    &.slide-enter,
+    &.slide-leave-to
+      transform translate3d(100%, 0, 0)
+    .header
+      position relative
+      height 44px
+      text-align center
+      .title
+        line-height 44px
+        font-size $font-size-large
+        color $color-text-ll
+      .close  
+        position absolute
+        top 0
+        right 8px
+        .icon-close
+          display block
+          padding 12px
+          font-size 20px
+          color $color-theme
+    .search-box-wrapper
+      margin 20px
+    .shortcut
+      .list-wrapper
+        position absolute 
+        top 165px
+        bottom 0
+        width 100%
+        .list-scroll
+          height 100%
+          overflow hidden
+          .list-inner
+            padding 20px 30px
+    .search-result
+      position fixed
+      top 124px
+      bottom 0
+      width 100%
+    
 </style>
