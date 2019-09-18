@@ -40,17 +40,21 @@ export const playerMixin = {
     ])
   },
   methods: {
+    // changeMode() {
+    //   const mode = (this.mode + 1) % 3
+    //   this.setPlayMode(mode)
+    //   let list = null
+    //   if (mode === playMode.random) {
+    //     list = shuffle(this.sequenceList)
+    //   } else {
+    //     list = this.sequenceList
+    //   }
+    //   this.resetCurrentIndex(list)
+    //   this.setPlaylist(list)
+    // },
     changeMode() {
       const mode = (this.mode + 1) % 3
-      this.setPlayMode(mode)
-      let list = null
-      if (mode === playMode.random) {
-        list = shuffle(this.sequenceList)
-      } else {
-        list = this.sequenceList
-      }
-      this.resetCurrentIndex(list)
-      this.setPlaylist(list)
+      this.setPlayMode(mode);
     },
     resetCurrentIndex(list) {
       let index = list.findIndex((item) => {

@@ -122,6 +122,7 @@
   import Scroll from '../../components/scroll/Scroll.vue'
   import PlayList from '../playList/PlayList.vue';
   import { get } from 'http';
+  import {playerMixin} from '../../common/js/mixin'
   export default {
     components: {
       ProgressBar,
@@ -131,6 +132,9 @@
     },
     props: {
     },
+    mixins: [
+      playerMixin
+    ],
     data () {
       return {
         songUrl: '',
@@ -157,9 +161,6 @@
       },
       percent() {
         return this.currentTime / this.currentSong.duration
-      },
-      iconMode() {
-        return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop'  : 'icon-random'
       },
       ...mapGetters([
         'fullScreen',
@@ -249,10 +250,6 @@
           second = '0' + second;
         }
         return `${minute}:${second}`
-      },
-      changeMode() {
-        const mode = (this.mode + 1) % 3
-        this.setPlayMode(mode);
       },
       onPorgressBarChange(percent) {
         const currentTime = this.currentSong.duration * percent
