@@ -38,7 +38,7 @@
         this.query = ''
       },
       blur() {
-      this.$refs.query.blur()
+        this.$refs.query.blur()
       }
     },
 }
