@@ -1,7 +1,7 @@
 import * as types from './mutation-types'
 import {playMode} from '../common/js/config'
 import {shuffle} from '../common/js/util'
-import {saveSearch,deleteSearch,clearSearch} from '../common/js/cache'
+import {saveSearch,deleteSearch,clearSearch,savePlay} from '../common/js/cache'
 import { type } from 'os'
 export const selectPlay = function ({commit}, {list, index}){
   commit(types.SET_SEQUENCE_LIST, list)
@@ -22,7 +22,6 @@ export const randomPlay = function({commit, state},{list}){
 
 export const insertSong = function({commit, state}, song) {
   let playList = state.playList.slice();
-  console.log("TCL: insertSong -> playList", playList)
   let currentIndex = state.currentIndex;
   let fpIndex = findIndex(playList, song);
   currentIndex++;
@@ -77,6 +76,10 @@ export const deleteSongList = function({commit}){
   commit(types.SET_PLAYLIST,[]);
   commit(types.SET_CURRENT_INDEX, -1);
   commit(types.SET_PLAYING_STATE, false);
+}
+
+export const savePlayHistory = function({commit}, song) {
+  commit(types.SET_PLAY_HISTORY, savePlay(song));
 }
 
 function findIndex(list, song) {

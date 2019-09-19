@@ -48,14 +48,14 @@
       showSinger: {
         type: Boolean,
         default: true
-      }
+      },
     },
     data () {
       return {
         page: 1,
         result: [],
         pullup: true,
-        hasMore: true,
+        hasMore: false,
         beforeScroll: true,
         title: '抱歉,暂无搜索结果'
       };
