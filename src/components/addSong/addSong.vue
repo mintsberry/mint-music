@@ -28,6 +28,12 @@
       <div class="search-result" v-show="query">
         <Suggest :query="query" :showSinger="showSinger" @select="selectSuggest" @listScroll="blurInput"></Suggest>
       </div>
+      <TopTip ref="topTip">
+        <div class="tip-title">
+          <i class="icon-ok"></i>
+          <span class="text">歌曲已添加</span>
+        </div>
+      </TopTip>
     </div>
   </transition>
 </template>
@@ -41,6 +47,7 @@
   import SongList from '../songList/SongList.vue';
   import Song from '../../common/js/song'
   import SearchList from '../searchList/SearchList.vue'
+  import TopTip from '../topTip/TopTip.vue';
   export default {
     components: {
       SearchBox,
@@ -48,7 +55,8 @@
       Switches,
       Scroll,
       SongList,
-      SearchList
+      SearchList,
+      TopTip
     },
     props: {
       
@@ -88,6 +96,7 @@
       },
       selectSuggest() {
         this.saveSearch();
+        this.showTip();
       },
       switchItem(index) {
         this.currentIndex = index;
@@ -95,7 +104,11 @@
       selectSong(song, index){
         if (index !== 0) {
           this.insertSong(new Song(song));
+          this.showTip();
         }
+      },
+      showTip() {
+        this.$refs.topTip.show();
       },
       ...mapActions([
         'insertSong'
@@ -156,5 +169,15 @@
       top 124px
       bottom 0
       width 100%
-    
+    .tip-title
+      text-align: center
+      padding: 18px 0
+      font-size: 0
+      .icon-ok
+        font-size: $font-size-medium
+        color: $color-theme
+        margin-right: 4px
+      .text
+        font-size: $font-size-medium
+        color: $color-text
 </style>

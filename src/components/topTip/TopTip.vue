@@ -1,6 +1,6 @@
 <template>
   <transition name="drop">
-    <div class="top-tip" v-show="showFlag">
+    <div class="top-tip" v-show="showFlag" @click.stop="hide">
       <slot></slot>
     </div>
   </transition>
@@ -15,7 +15,7 @@
     },
     data () {
       return {
-        showFlag = false;
+        showFlag: false
       };
     },
     computed: {
@@ -24,6 +24,10 @@
     methods: {
       show() {
         this.showFlag = true;
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+          this.hide();
+        }, 2000);
       },
       hide() {
         this.showFlag = false;
