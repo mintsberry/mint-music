@@ -1,7 +1,7 @@
 <template>
   <ul class="switches">
-    <li class="switch-item">
-      <span></span>
+    <li class="switch-item" v-for="(item,index) in switches" :key="index" :class="{'active': currentIndex === index}" @click="switchItem(index)">
+      <span>{{item.name}}</span>
     </li>
   </ul>
 </template>
@@ -28,18 +28,20 @@
       
     },
     methods: {
-      
+      switchItem(index) {
+        this.$emit('switch', index);
+      }
     },
 }
 </script>
 <style lang='stylus' scoped>
   @import '../../common/stylus/variable.styl';
-  .swtiches
+  .switches
     display flex
     align-items center
     width 240px
     margin 0 auto 
-    border 1px soild $color-highlight-background
+    border 1px solid $color-highlight-background
     border-radius 5px
     .switch-item
       flex 1

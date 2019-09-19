@@ -45,7 +45,7 @@
   import {mapActions, mapGetters} from 'vuex';
   import Confirm from '../../components/confirm/Confirm.vue'
   import Scroll from '../../components/scroll/Scroll.vue'
-  import {playlistMixin} from '../../common/js/mixin'
+  import {playlistMixin, searchMixin} from '../../common/js/mixin'
   export default {
     components: {
       SearchBox,
@@ -62,17 +62,13 @@
     data () {
       return {
         hotKey: [],
-        query: ''
       };
     },
-    mixins:[playlistMixin],
+    mixins:[playlistMixin,searchMixin],
     computed: {
       shortcut() {
         return this.hotKey.concat(this.searchHistory);
       },
-      ...mapGetters([
-        'searchHistory'
-      ])
     },
     watch: {
       query(newQuery){
@@ -94,20 +90,11 @@
         this.$refs.scroll.refresh();
         this.$refs.suggest.refresh();
       },  
-      addQuery(query){
-        this.$refs.searchBox.setQuery(query);
-      },
-      onQueryChange(query) {
-        this.query = query
-      },
       deleteOne(item) {
         this.deleteSearchHistory(item)
       },
       deleteAll() {
         this.clearSearchHistory();
-      },
-      saveSearch() {
-        this.saveSearchHistory(this.query)
       },
       showConfirm() {
         this.$refs.confirm.show();
@@ -124,9 +111,6 @@
           }
         })
       },
-      blurInput() {
-        this.$refs.searchBox.blur();
-      },
       _randGetNum(max, num) {
         let ret = [];
         while (ret.length < num) {
@@ -141,8 +125,7 @@
         return ret;
       },
       ...mapActions([
-        'saveSearchHistory',
-        'deleteSearchHistory',
+
         'clearSearchHistory'
       ])
     },

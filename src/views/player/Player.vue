@@ -112,7 +112,7 @@
   </div>
 </template>
 <script>
-  import  {mapGetters, mapMutations} from 'vuex'
+  import  {mapGetters, mapMutations, mapActions} from 'vuex'
   import {getSong} from '../../api/song'
   import animations from 'create-keyframe-animation'
   import ProgressBar from '../../components/progressBar/ProgressBar.vue'
@@ -232,9 +232,9 @@
       open() {
         this.setFullScreent(true);
       },
-      ready() {
-        
+      ready() { 
         this.songReady = true;
+        this.savePlayHistory(this.currentSong);
       },
       error() {
         this.songReady = true;
@@ -300,7 +300,7 @@
           }
           this.setCurrentIndex(index);
         } else {
-          this.loop();
+          this.loop(); 
         }
         if (!this.playing){
           this.setPlayingState(!this.playing);
@@ -467,7 +467,10 @@
         setPlayingState: 'SET_PLAYING_STATE',
         setCurrentIndex: 'SET_CURRENT_INDEX',
         setPlayMode : 'SET_PLAY_MODE'
-      })
+      }),
+      ...mapActions([
+        'savePlayHistory'
+      ])
     },
 }
 </script>

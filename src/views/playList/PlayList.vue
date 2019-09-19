@@ -24,7 +24,7 @@
           </transition-group>
         </Scroll>
         <div class="list-operate">
-          <div class="add">
+          <div class="add" @click="addSong">
             <i class="icon-add"></i>
             <span class="text">添加歌曲到队列</span>
           </div>
@@ -33,8 +33,8 @@
           <span>关闭</span>
         </div>
       </div>
-      <Confirm ref="confirm" text="是否清空播放列表" confirmBtnText="清空" @confirm="confirmClear"></Confirm>
-      <AddSong ref="addSong"></AddSong>
+        <Confirm ref="confirm" text="是否清空播放列表" confirmBtnText="清空" @confirm="confirmClear"></Confirm>
+        <AddSong ref="addSong"></AddSong>
     </div>
   </transition>
 </template>
@@ -49,7 +49,7 @@
     components: {
       Scroll,
       Confirm,
-      AddSong
+      AddSong,
     },
     props: {
       
@@ -87,6 +87,9 @@
           this.$refs.scroll.refresh();
           this.scrollToCurrent(this.currentIndex);
         }, 20);
+      },
+      addSong() {
+        this.$refs.addSong.show();
       },
       scrollToCurrent(current){
         this.$refs.scroll.scrollToElement(this.$refs.listItem[current], 300);
