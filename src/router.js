@@ -7,6 +7,7 @@ import Search from './views/search/Search.vue'
 import Singer from './views/singer/Singer.vue'
 import SingerDetail from './views/singer/SingerDetail.vue'
 import TopList from './views/topList/TopList.vue'
+import UserCenter from './components/userCenter/UserCenter.vue';
 Vue.use(Router)
 Vue.use(Router)
 
@@ -17,6 +18,11 @@ export default new Router({
     {
       path: '/',
       redirect: 'recommend'
+    },
+    {
+      path: '/user',
+      name: 'user',
+      component: UserCenter,
     },
     {
       path: '/rank',

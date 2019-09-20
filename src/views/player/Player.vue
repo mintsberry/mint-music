@@ -75,7 +75,7 @@
               <i class="icon-next" @click="next"></i>
             </div>
             <div class="icon i-right">
-              <i class="icon icon-not-favorite"></i>
+              <i class="icon" :class="getFavoriteIcon(currentSong)" @click="toggleFavorite(currentSong)"></i>
             </div>  
           </div>
         </div>
@@ -168,7 +168,8 @@
         'currentIndex',
         'currentSong',
         'playing',
-        'mode'
+        'mode',
+        'favoriteList'
       ])
     },
     watch: {
@@ -337,6 +338,26 @@
           this.currentLineNum = 0
         })
       },
+      getFavoriteIcon(currentSong){
+        if (this.isFavorite(currentSong)){
+          return 'icon-favorite'
+        } else { 
+          return 'icon-not-favorite'
+        }
+      },
+      toggleFavorite(currentSong){
+        if (this.isFavorite(currentSong)) {
+          this.deleteFavoriteList(currentSong)
+        } else {
+          this.saveFavoriteList(currentSong)
+        }
+      },
+      isFavorite(song) {
+        const index = this.favoriteList.findIndex((item)=>{
+          return item.id === song.id
+        })
+        return index > -1
+      },
       handlerLyric({lineNum, txt}) {
         // console.log("TCL: handlerLyric -> txt", lyric)
         // 回调不会自动释放
@@ -469,7 +490,9 @@
         setPlayMode : 'SET_PLAY_MODE'
       }),
       ...mapActions([
-        'savePlayHistory'
+        'savePlayHistory',
+        'saveFavoriteList',
+        'deleteFavoriteList'
       ])
     },
 }

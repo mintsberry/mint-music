@@ -103,7 +103,7 @@
       },
       selectSong(song, index){
         if (index !== 0) {
-          this.insertSong(new Song(song));
+          this.insertSong(new Song(song)); 
           this.showTip();
         }
       },

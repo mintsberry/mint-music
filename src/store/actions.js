@@ -1,7 +1,7 @@
 import * as types from './mutation-types'
 import {playMode} from '../common/js/config'
 import {shuffle} from '../common/js/util'
-import {saveSearch,deleteSearch,clearSearch,savePlay} from '../common/js/cache'
+import {saveSearch,deleteSearch,clearSearch,savePlay,saveFavorite, deleteFavorite} from '../common/js/cache'
 import { type } from 'os'
 export const selectPlay = function ({commit}, {list, index}){
   commit(types.SET_SEQUENCE_LIST, list)
@@ -36,7 +36,7 @@ export const insertSong = function({commit, state}, song) {
   }
   commit(types.SET_PLAYLIST, playList);
   commit(types.SET_CURRENT_INDEX, currentIndex);
-  commit(types.SET_FULL_SCREEN, true);
+  // commit(types.SET_FULL_SCREEN, true);
   commit(types.SET_PLAYING_STATE, true); 
 }
 
@@ -80,6 +80,14 @@ export const deleteSongList = function({commit}){
 
 export const savePlayHistory = function({commit}, song) {
   commit(types.SET_PLAY_HISTORY, savePlay(song));
+}
+
+export const saveFavoriteList = function({commit},song) {
+  commit(types.SET_FAVORITE_LIST, saveFavorite(song))
+}
+
+export const deleteFavoriteList = function({commit},song) {
+  commit(types.SET_FAVORITE_LIST, deleteFavorite(song))
 }
 
 function findIndex(list, song) {
