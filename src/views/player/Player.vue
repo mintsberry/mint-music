@@ -102,6 +102,7 @@
       </div>
     </transition>
     <PlayList ref="playList"></PlayList>
+    <Toast ref="toast" :content="'歌曲无版权'"></Toast>
     <audio :src="songUrl" 
       ref="audio"
       @canplay="ready"
@@ -121,6 +122,7 @@
   import Lyric from 'lyric-parser'
   import Scroll from '../../components/scroll/Scroll.vue'
   import PlayList from '../playList/PlayList.vue';
+  import Toast from '../../components/toast/Toast.vue';
   import { get } from 'http';
   import {playerMixin} from '../../common/js/mixin'
   export default {
@@ -128,7 +130,8 @@
       ProgressBar,
       ProgressCircle,
       Scroll,
-      PlayList
+      PlayList,
+      Toast
     },
     props: {
     },
@@ -196,8 +199,9 @@
                   if (songData.midurlinfo[0].purl && songData.midurlinfo[0].purl !== ''){
                     this.songUrl = songData.sip[0] + songData.midurlinfo[0].purl;
                   } else {
+                    this.$refs.toast.show();
+                    this.songReady = true;
                     this.songUrl = "";
-                    console.log(resp);
                   }
                 }
               }
