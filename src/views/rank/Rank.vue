@@ -70,9 +70,15 @@
       },
       selectItem(item) {
         this.setTopList(item);
-        this.$router.push({
-          path: `/rank/${item.topId}`
-        })
+        if (item.title === "MV榜"){
+          this.$router.push({
+            path: `rank/mv/${item.topId}`
+          })
+        } else {
+          this.$router.push({
+            path: `rank/songs/${item.topId}`
+          })
+        }
       },
       _getTopList(){
         getTopList().then((resp)=>{

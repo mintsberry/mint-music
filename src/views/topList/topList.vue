@@ -1,7 +1,7 @@
 <template>
-  <div class="slide">
+  <transition class="fade">
     <MusicList :title="topList.title" :bgImage="bgImage" :songs="songs" :rank="rank"></MusicList>
-  </div>
+  </transition>
 </template>
 <script>
   import MusicList from '../musicList/MusicList.vue'
@@ -37,7 +37,7 @@
     },
     methods: {
       _getMusicList(){
-        if (this.topList.id){
+        if (this.songs.length){
           this.$router.push('/rank');
         }
         getMusicList(this.topList.topId).then((resp) => {
@@ -66,4 +66,10 @@
 }
 </script>
 <style lang='stylus' scoped>
+  .fade-enter-active,
+  .fade-leave-active
+    transition all .2s linear 
+  .fade-enter,
+  .fade-leave-to
+    transform translateX(100%)
 </style>

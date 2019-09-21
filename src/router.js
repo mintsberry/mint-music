@@ -7,6 +7,7 @@ import Search from './views/search/Search.vue'
 import Singer from './views/singer/Singer.vue'
 import SingerDetail from './views/singer/SingerDetail.vue'
 import TopList from './views/topList/TopList.vue'
+import MvList from './views/mvList/MvList.vue';
 import UserCenter from './components/userCenter/UserCenter.vue';
 Vue.use(Router)
 Vue.use(Router)
@@ -30,8 +31,12 @@ export default new Router({
       component: Rank,
       children: [
         {
-          path: ':id',
+          path: 'songs/:id',
           component: TopList
+        },
+        {
+          path: 'mv/:id',
+          component: MvList
         }
       ]
     },
