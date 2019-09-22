@@ -28,6 +28,9 @@ const mutations = {
   [types.SET_TOP_LISt](state, topList){
     state.topList = topList;
   },
+  [types.SET_VIDEO](state, video) {
+    state.video = video;
+  },
   [types.SET_SEARCH_HISTORY](state, history) {
     state.searchHistory = history;
   },

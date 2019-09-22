@@ -72,7 +72,7 @@
         this.setTopList(item);
         if (item.title === "MV榜"){
           this.$router.push({
-            path: `rank/mv/${item.topId}`
+            path: `rank/mv`
           })
         } else {
           this.$router.push({

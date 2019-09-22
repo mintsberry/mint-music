@@ -13,7 +13,7 @@
       <Scroll :data="video" class="list" ref="list" >
         <div class="mv-list-wrapper">
           <ul>
-            <li class="item" v-for="(item,index) in video" :key="index">
+            <li class="item" v-for="(item,index) in video" :key="index" @click="selectItem(item)">
               <img class="cover" :src="item.cover" width="100%">
               <div class="filter" ref="filter"></div>
               <div class="item-title">
@@ -22,11 +22,11 @@
               </div>
               <div class="song-info">
                 <span class="rank">{{index + 1}}</span>
-                <span class="updateTime">{{updTime}}</span>
+                <span class="updateTime">{{updTime(item.pudate)}}</span>
               </div>
               <div class="play-count">
                 <svg t="1569070216082" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3538" width="16" height="16"><path d="M825.167761 350.235053L344.653225 36.853457C281.976141-4.931691 224.525867-10.152124 177.51901 15.962796 125.287894 42.078992 99.172973 94.305007 99.172973 167.426784v689.4339c0 73.120502 26.11492 125.352893 73.121778 151.467813 15.670227 10.444693 36.560889 15.670227 57.450274 15.670228 36.560889 0 73.121777-15.670227 109.682666-36.560889l485.74007-329.051823c57.45155-41.782598 88.792005-94.012438 88.792005-156.688247s-31.34173-114.901824-88.792005-151.462713zM778.160905 580.045077L292.420834 909.090525c-31.335354 20.890661-57.45155 26.116196-78.342211 20.890661-15.670227-10.443418-26.11492-36.560889-26.11492-73.120502V167.426784c0-36.560889 10.444693-67.896243 26.11492-73.121777 5.220434-5.220434 10.445968-5.220434 20.890661-5.220434 15.670227 0 36.560889 5.220434 62.675809 20.890662L778.160905 423.35683c31.335354 20.889386 52.231116 52.226015 52.231116 78.340936 0 26.116196-20.894487 57.45665-52.231116 78.347311z m0 0" fill="#e6e6e6" p-id="3539"></path></svg>
-                <span class="count">24.3万</span>
+                <span class="count">{{countParse(item.play)}}</span>
               </div>
               <div class="play-icon" v-if="item.pic">
                 <img :src="item.pic" width="48px" height="48px" alt="">
@@ -38,6 +38,7 @@
           <Loading></Loading>
         </div>
     </Scroll>
+    <router-view></router-view>
     </div>
   </transition>
 </template>
@@ -45,9 +46,10 @@
   import {getMvList} from '../../api/rank';
   import { ERR_OK } from '../../api/config';
   import Video from '../../common/js/video';
-  import { mapGetters } from 'vuex';
+  import { mapGetters, mapMutations } from 'vuex';
   import Scroll from '../../components/scroll/Scroll.vue';
   import Loading from '../../components/loading/Loading.vue';
+  import {numParse,formatDate} from '../../common/js/util';
   export default {
     components: {
       Scroll,
@@ -67,9 +69,6 @@
           return `background-image:url(${this.video[0].cover})`
         }
       },
-      updTime() {
-        return '2019-10-27'
-      },
       ...mapGetters([
         'topList'
       ])
@@ -85,13 +84,29 @@
       back(){
         this.$router.back();
       },
+      countParse(count) {
+        return numParse(count);
+      },
+      updTime(time) {
+        let date = new Date(time);
+        // return formatDate(time,'yyyy-MM-dd')
+      },
+      selectItem(item) {
+        this.setVideo(item);
+        this.$router.push({
+          path: `/rank/mv/${item.vid}`
+        })
+      },
       _normalizeVideo(list){
         let ret = [];
         list.forEach(element => {
           ret.push(new Video(element.video_info,element.medal.basic,element.rank_data));
         });
         return ret;
-      }
+      },
+      ...mapMutations({
+        setVideo: 'SET_VIDEO'
+      })
     },
 }
 </script>
@@ -108,7 +123,7 @@
     background $color-background
     .back
       position fixed
-      z-index 50
+      z-index 40
       top 0
       left 6px
       .icon-back
@@ -164,9 +179,12 @@
             position absolute
             margin 14px
             color $color-text
+            left 0
+            right 80px
             .name
               margin-bottom 4px
               font-size $font-size-medium-x
+              no-wrap()
             .singer
               font-size $font-size-medium
           .song-info

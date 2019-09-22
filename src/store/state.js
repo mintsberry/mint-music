@@ -11,6 +11,7 @@ const state = {
   currentIndex: -1,
   disc: {},
   topList: {},
+  video: {},
   searchHistory: loadSearch(),
   playHistory: loadPlay(),
   favoriteList: loadFavorite()
