@@ -31,7 +31,7 @@ export function numParse(str){
   let num = Number(str);
   let text = num;
   if (num > 100000000) {
-    text = (num / 100000000).toFixed(2) + unit[0];
+    text = (num / 100000000).toFixed( 2) + unit[0];
   } else if (num > 10000) {
     text = (num / 10000).toFixed(2) 
     if (text.split('.')[0].length >= 3){
