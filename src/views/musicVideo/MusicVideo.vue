@@ -3,58 +3,50 @@
     <div class="video-player">
       <video :src="videoUrl" width="100%" controls x5-video-player-type="h5" x5-video-orientation="landscape" :poster="this.video.cover"></video>
     </div>
-    <div class="video-info">
-      <div class="mv-info">
-        <div class="title"><svg class="icon_mv" viewBox="0 0 38 22" width="22" height="22">
-            <title>MV</title>
-            <path d="M33,0.5H5c-2.5,0-4.5,2-4.5,4.5v12c0,2.5,2,4.5,4.5,4.5h28c2.5,0,4.5-2,4.5-4.5V5C37.5,2.5,35.5,0.5,33,0.5z
-            M36,17c0,1.7-1.4,3-3,3H5c-1.7,0-3-1.3-3-3V5c0-1.7,1.3-3,3-3h28c1.7,0,3,1.3,3,3V17z M17.8,5.6h2.1V17h-1.7V8.9H18L14.5,17H13
-            L9.5,8.9H9.4V17H7.7V5.6h2.1l4,9.2L17.8,5.6z M29.3,5.6h1.9l-4,11.4h-2.1L21,5.6h1.9l3.2,9.5L29.3,5.6z"></path>
-            </svg>
-            <span class="text">{{video.name}}</span>
-            
+    <Scroll class="video-info" :data="this.other">
+      <div>
+        <div class="mv-info">
+          <div class="title"><svg class="icon_mv" viewBox="0 0 38 22" width="22" height="22">
+              <title>MV</title>
+              <path d="M33,0.5H5c-2.5,0-4.5,2-4.5,4.5v12c0,2.5,2,4.5,4.5,4.5h28c2.5,0,4.5-2,4.5-4.5V5C37.5,2.5,35.5,0.5,33,0.5z
+              M36,17c0,1.7-1.4,3-3,3H5c-1.7,0-3-1.3-3-3V5c0-1.7,1.3-3,3-3h28c1.7,0,3,1.3,3,3V17z M17.8,5.6h2.1V17h-1.7V8.9H18L14.5,17H13
+              L9.5,8.9H9.4V17H7.7V5.6h2.1l4,9.2L17.8,5.6z M29.3,5.6h1.9l-4,11.4h-2.1L21,5.6h1.9l3.2,9.5L29.3,5.6z"></path>
+              </svg>
+              <span class="text">{{video.name}}</span>
+              
+          </div>
+          <div class="author"><i class="icon-mine"></i><span class="text">{{video.singers}}</span></div>
+          <div class="playCnt">总播放{{countPlay}}次</div>
+          <div class="pub"><span>发布:{{pubDate(this.mvInfo.pubdate)}}</span>&nbsp;<span>时长{{durTime}}</span></div>
+          <div class="desc" v-html="parseDesc(this.mvInfo.desc)"></div>
         </div>
-        <div class="author"><i class="icon-mine"></i><span class="text">{{video.singers}}</span></div>
-        <div class="playCnt">总播放3438.0万次</div>
-        <div class="pub"><span>发布:2019-09-16</span>&nbsp;<span>时长:03:42</span></div>
-        <div class="desc">全球等到哭的激动!</div>
+        <ul class="relate-list">
+          <li class="item" v-for="(item, index) in other" :key="index">
+            <div class="mv-pic" width="135px">
+              <img :src="item.cover_pic" alt="" width="100%" height="100%">
+            </div>
+            <div class="content">
+              <div class="name">{{item.name}}</div>
+              <div class="introduce">
+                <span class="author">来自：{{item.uploader_nick}}</span>&nbsp;
+                <span class="time">{{pubDate(item.pubdate)}}</span>
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
-      <ul class="relate-list">
-        <li class="item">
-          <div class="mv-pic">
-            <img src="http://y.gtimg.cn/music/photo_new/T015R640x360M103000fHRU11gatzZ.jpg" alt="" width="135px">
-          </div>
-          <div class="content">
-            <div class="name">深度解析，惊喜不断:周杰伦+阿信《说好不哭》</div>
-            <div class="introduce">
-              <span class="author">来自：ZIBO</span>&nbsp;
-              <span class="time">2019-10-27</span>
-            </div>
-          </div>
-        </li>
-        <li class="item">
-          <div class="mv-pic">
-            <img src="http://y.gtimg.cn/music/photo_new/T015R640x360M103000fHRU11gatzZ.jpg" alt="" width="135px">
-          </div>
-          <div class="content">
-            <div class="name">深度解析，惊喜不断:周杰伦+阿信《说好不哭》周杰伦+阿信《说好不哭》周杰伦+阿信《说好不哭》周杰伦+阿信《说好不哭》</div>
-            <div class="introduce">
-              <span class="author">来自：ZIBO</span>&nbsp;
-              <span class="time">2019-10-27</span>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </div>
+    </Scroll>
   </div>
 </template>
 <script>
 import { mapGetters } from 'vuex';
-import {getMv} from '../../api/mv';
+import {getMv,getMvInfoAndOther} from '../../api/mv';
+import Scroll from '../../components/scroll/Scroll.vue';
 import { ERR_OK } from '../../api/config';
+import { numParse, formatDate } from '../../common/js/util';
   export default {
     components: {
-      
+      Scroll
     },
     props: {
       
@@ -62,10 +54,24 @@ import { ERR_OK } from '../../api/config';
     data () {
       return {
         mp4Url: [],
-        videoUrl: ''
+        videoUrl: '',
+        mvInfo: {},
+        other: []
       };
     },
     computed: {
+      countPlay() {
+        if (this.mvInfo.playCnt) {
+          return '';
+        }
+        return numParse(this.mvInfo.playcnt);
+      },
+      durTime() {
+        if (!this.mvInfo.duration){
+          return '';
+        }
+        return this.format(this.mvInfo.duration);
+      },
       ...mapGetters([
         'video'
       ])
@@ -89,7 +95,6 @@ import { ERR_OK } from '../../api/config';
       }
     },
     created(){
-      console.log(this.video);
       if (Object.keys(this.video).length === 0) {
         this.$router.push('/recommend');
         return;
@@ -101,9 +106,37 @@ import { ERR_OK } from '../../api/config';
           }
         }
       })
+      getMvInfoAndOther(this.video.vid).then((resp)=>{
+        if (resp.code === ERR_OK) {
+          this.mvInfo = resp.mvinfo.data[this.video.vid];
+          this.other = resp.other.data.list;
+          console.log("TCL: created -> other", this.other)
+        }
+      })
     },
     methods: {
-    
+      format(interval){
+        interval = interval | 0;
+        let minute = interval / 60 | 0;
+        let second = interval % 60;
+        if (second.toString().length == 1){
+          second = '0' + second;
+        }
+        return `${minute}:${second}`
+      },
+      pubDate(update) {
+        if (!update){
+          return '';
+        }
+        let date = new Date(update*1000);
+        return formatDate(date,"yyyy-MM-dd")
+      },
+      parseDesc(text) {
+        if (!text || text===''){
+          return '';
+        }
+        return text.replace(/\n/ig,"<br>")
+      }
     },
 }
 </script>
@@ -151,6 +184,11 @@ import { ERR_OK } from '../../api/config';
           margin-bottom 8px
         .pub
           margin-bottom 8px
+        .desc
+          word-break: break-all
+          height 16px;
+          overflow hidden;
+          line-height 16px
       .relate-list
         background-color $color-background-d
         border-radius 4px
@@ -168,15 +206,28 @@ import { ERR_OK } from '../../api/config';
             padding-bottom 0
             border none
           .mv-pic
+            position relative
             flex 0 0 135px
             width 135px
             margin-right 8px
             text-align center
+            &:before            
+              content: "";
+              display: block;
+              padding-top: 56.267%;
             img
+              position absolute
+              top 0
+              left 0
               border-radius 4px
               vertical-align:bottom
+              object-fit cover
           .content
+            display flex
             flex 1
+            height 70px
+            flex-direction column
+            justify-content space-between
             line-height 20px
             overflow hidden
             .name
@@ -186,5 +237,8 @@ import { ERR_OK } from '../../api/config';
               display: -webkit-box;
               -webkit-line-clamp: 2;
               -webkit-box-orient: vertical;
+            .introduce
+              color $color-text-l
+              font-size $font-size-small
           
 </style>
