@@ -179,6 +179,8 @@
       currentSong(newSong, oldSong){
         if (!newSong.id || newSong.id===oldSong.id){
           return;
+        } else {
+          this.songUrl = ''
         }
         if (this.currentLyric) {
           this.currentLyric.stop();
@@ -565,8 +567,8 @@
       .middle
         position fixed
         width 100%
-        top 88px
-        bottom 20px
+        top 60px
+        bottom 160px
         white-space nowrap
         font-size 0
         .middle-l
@@ -614,7 +616,7 @@
           display: inline-block
           position: absolute;
           top: 0px;
-          bottom: 170px;
+          bottom: 0px;
           vertical-align: top
           width: 100%
           overflow: hidden
