@@ -14,8 +14,10 @@
         <div class="mv-list-wrapper">
           <ul>
             <li class="item" v-for="(item,index) in video" :key="index" @click="selectItem(item)">
-              <img class="cover" :src="item.cover" width="100%">
-              <div class="filter" ref="filter"></div>
+              <div class="media">
+                <img class="cover" :src="item.cover">
+                <div class="filter" ref="filter"></div>
+              </div>
               <div class="item-title">
                 <div class="name">{{item.name}}</div>
                 <div class="singer">{{item.singers}}</div>
@@ -97,6 +99,10 @@
           path: `/rank/mv/${item.vid}`
         })
       },
+      updTime(time) {
+        let date = new Date(time * 1000);
+        return formatDate(date,"yyyy-MM-dd");
+      },
       _normalizeVideo(list){
         let ret = [];
         list.forEach(element => {
@@ -142,19 +148,6 @@
       line-height 42px
       font-size $font-size-large
       color $color-text
-    .bg-image
-      position relative
-      width 100%
-      height 0
-      transform-origin top
-      background-size cover
-      .filter
-        position absolute
-        top 0
-        left 0
-        width 100%
-        height 100%
-        background rgba(7,17,27,0.4)
     .list
       position fixed
       top 48px
@@ -170,11 +163,6 @@
           margin 16px
           box-sizing border-box
           font-size $font-size-medium
-          .filter
-            position absolute
-            width 100%
-            height 100%
-            background rgba(7,17,27,0.4)
           .item-title
             position absolute
             margin 14px
@@ -211,8 +199,27 @@
               margin-left 2px
               line-height 16px
               vertical-align top
+          .media
+            position relative
+            width 100%
+            &:before
+              content ''
+              display block
+              padding-top 56.2%
           .cover
-            border-radius 8px
+            position absolute 
+            top 0
+            left 0 
+            border-radius 4px
+            width 100%
+            height 100%
+          .filter
+            position absolute
+            width 100%
+            height 100%
+            top 0
+            left 0
+            background rgba(7,17,27,0.4)
       .loading-container
         position absolute
         width 100%

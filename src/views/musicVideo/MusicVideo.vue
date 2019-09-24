@@ -1,9 +1,9 @@
 <template>
   <div class="music-video">
     <div class="video-player">
-      <video :src="videoUrl" width="100%" controls x5-video-player-type="h5" x5-video-orientation="landscape" :poster="this.video.cover"></video>
+      <video :src="videoUrl" width="100%" controls x5-video-player-type="h5" x5-video-orientation="landscape" :poster="this.video.cover" ref="video"></video>
     </div>
-    <Scroll class="video-info" :data="this.other">
+    <Scroll class="video-info" :data="this.other" ref="scroll">
       <div>
         <div class="mv-info">
           <div class="title"><svg class="icon_mv" viewBox="0 0 38 22" width="22" height="22">
@@ -29,7 +29,7 @@
               <div class="name">{{item.name}}</div>
               <div class="introduce">
                 <span class="author">来自：{{item.uploader_nick}}</span>&nbsp;
-                <span class="time">{{pubDate(item.pubdate)}}</span>
+                <!-- <span class="time">{{pubDate(item.pubdate)}}</span> -->
               </div>
             </div>
           </li>
@@ -110,9 +110,12 @@ import { numParse, formatDate } from '../../common/js/util';
         if (resp.code === ERR_OK) {
           this.mvInfo = resp.mvinfo.data[this.video.vid];
           this.other = resp.other.data.list;
-          console.log("TCL: created -> other", this.other)
         }
       })
+    },
+    mounted() {
+      this.$refs.scroll.$el.style.top = `${this.getVideoHight()}px`;
+      this.$refs.scroll.refresh();
     },
     methods: {
       format(interval){
@@ -136,6 +139,9 @@ import { numParse, formatDate } from '../../common/js/util';
           return '';
         }
         return text.replace(/\n/ig,"<br>")
+      },
+      getVideoHight() {
+        return this.$refs.video.clientHeight;
       }
     },
 }
@@ -195,7 +201,7 @@ import { numParse, formatDate } from '../../common/js/util';
         padding 8px
         .item
           display flex
-          padding 4px 0px
+          padding 8px 0px
           align-items center
           font-size $font-size-medium
           color $color-text-ll
@@ -219,7 +225,7 @@ import { numParse, formatDate } from '../../common/js/util';
               position absolute
               top 0
               left 0
-              border-radius 4px
+              border-radius 6px
               vertical-align:bottom
               object-fit cover
           .content
@@ -238,6 +244,8 @@ import { numParse, formatDate } from '../../common/js/util';
               -webkit-line-clamp: 2;
               -webkit-box-orient: vertical;
             .introduce
+              display: flex;
+              justify-content: space-between;
               color $color-text-l
               font-size $font-size-small
           
