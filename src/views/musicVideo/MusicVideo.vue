@@ -1,34 +1,35 @@
 <template>
   <div class="music-video">
     <div class="video-player">
-      <video :src="videoUrl" width="100%" controls x5-video-player-type="h5" x5-video-orientation="landscape" :poster="this.video.cover" ref="video"></video>
+      <video :src="videoUrl" controls x5-video-player-type="h5" x5-video-orientation="landscape" :poster="mvInfo.cover_pic" ref="video" class="video"></video>
     </div>
     <Scroll class="video-info" :data="this.other" ref="scroll">
       <div>
         <div class="mv-info">
-          <div class="title"><svg class="icon_mv" viewBox="0 0 38 22" width="22" height="22">
+          <div class="title">
+              <svg class="icon_mv" viewBox="0 0 38 22" width="22" height="22" v-show="mvInfo.type === 0">
               <title>MV</title>
               <path d="M33,0.5H5c-2.5,0-4.5,2-4.5,4.5v12c0,2.5,2,4.5,4.5,4.5h28c2.5,0,4.5-2,4.5-4.5V5C37.5,2.5,35.5,0.5,33,0.5z
               M36,17c0,1.7-1.4,3-3,3H5c-1.7,0-3-1.3-3-3V5c0-1.7,1.3-3,3-3h28c1.7,0,3,1.3,3,3V17z M17.8,5.6h2.1V17h-1.7V8.9H18L14.5,17H13
               L9.5,8.9H9.4V17H7.7V5.6h2.1l4,9.2L17.8,5.6z M29.3,5.6h1.9l-4,11.4h-2.1L21,5.6h1.9l3.2,9.5L29.3,5.6z"></path>
               </svg>
-              <span class="text">{{video.name}}</span>
+              <span class="text">{{mvInfo.name}}</span>
               
           </div>
-          <div class="author"><i class="icon-mine"></i><span class="text">{{video.singers}}</span></div>
+          <div class="author"><i class="icon-mine"></i><span class="text">{{getVideoAuthor(mvInfo)}}</span></div>
           <div class="playCnt">总播放{{countPlay}}次</div>
           <div class="pub"><span>发布:{{pubDate(this.mvInfo.pubdate)}}</span>&nbsp;<span>时长{{durTime}}</span></div>
-          <div class="desc" v-html="parseDesc(this.mvInfo.desc)"></div>
+          <div class="desc" v-if="this.mvInfo.desc" v-html="parseDesc(this.mvInfo.desc)"></div>
         </div>
         <ul class="relate-list">
-          <li class="item" v-for="(item, index) in other" :key="index">
+          <li class="item" v-for="(item, index) in other" :key="index" @click="selectItem(item)">
             <div class="mv-pic" width="135px">
               <img :src="item.cover_pic" alt="" width="100%" height="100%">
             </div>
             <div class="content">
               <div class="name">{{item.name}}</div>
               <div class="introduce">
-                <span class="author">来自：{{item.uploader_nick}}</span>&nbsp;
+                <span class="author">来自：{{getVideoAuthor(item)}}</span>&nbsp;
                 <!-- <span class="time">{{pubDate(item.pubdate)}}</span> -->
               </div>
             </div>
@@ -44,6 +45,7 @@ import {getMv,getMvInfoAndOther} from '../../api/mv';
 import Scroll from '../../components/scroll/Scroll.vue';
 import { ERR_OK } from '../../api/config';
 import { numParse, formatDate } from '../../common/js/util';
+import { filterSinger } from '../../common/js/song';
   export default {
     components: {
       Scroll
@@ -100,28 +102,49 @@ import { numParse, formatDate } from '../../common/js/util';
         return;
       }
       this.closePlayer();
-      getMv(this.video.vid).then((resp)=>{
-        if (resp.code === ERR_OK) {
-          if (resp.getMvUrl.data && resp.getMvUrl.data[this.video.vid]) {
-            this.mp4Url = resp.getMvUrl.data[this.video.vid].mp4;
-          }
-        }
-      })
-      getMvInfoAndOther(this.video.vid).then((resp)=>{
-        if (resp.code === ERR_OK) {
-          this.mvInfo = resp.mvinfo.data[this.video.vid];
-          this.other = resp.other.data.list;
-        }
-      })
+      this.getMvInfo(this.video.vid);
+
     },
     mounted() {
-      this.$refs.scroll.$el.style.top = `${this.getVideoHight()}px`;
+      let width = document.documentElement.offsetWidth;
+      let height = width / 1.75 | 0
+      this.$refs.video.width = width;
+      this.$refs.video.height = height;
+      this.$refs.scroll.$el.style.top = `${height}px`;
       this.$refs.scroll.refresh();
     },
     beforeDestroy() {
       this.setPlayerDisplay(true);
     },
     methods: {
+      selectItem(item){
+        this.getMvInfo(item.vid);
+      },
+      getMvInfo(vid){
+        getMv(vid).then((resp)=>{
+          if (resp.code === ERR_OK) {
+            if (resp.getMvUrl.data && resp.getMvUrl.data[vid]) {
+              this.mp4Url = resp.getMvUrl.data[vid].mp4;
+            }
+          }
+        })
+        getMvInfoAndOther(vid).then((resp)=>{
+          if (resp.code === ERR_OK) {
+            this.mvInfo = resp.mvinfo.data[vid];
+            this.other = resp.other.data.list;
+          }
+        })
+      },
+      getVideoAuthor(mvInfo) {
+        if (!mvInfo.singers && !mvInfo.uploader_nick){
+          return '';
+        }
+        if (mvInfo.singers.length) {
+          return filterSinger(mvInfo.singers);
+        } else {
+          return mvInfo.uploader_nick
+        }
+      },
       format(interval){
         interval = interval | 0;
         let minute = interval / 60 | 0;
@@ -145,6 +168,7 @@ import { numParse, formatDate } from '../../common/js/util';
         return text.replace(/\n/ig,"<br>")
       },
       getVideoHight() {
+        console.log(this.$refs.video.clientHeight);
         return this.$refs.video.clientHeight;
       },
       ...mapActions([
@@ -167,6 +191,11 @@ import { numParse, formatDate } from '../../common/js/util';
     bottom 0
     right 0
     background-color  $color-highlight-background
+    .video-player
+      .video
+        position: absolute;
+        top: 0;
+        left: 0;
     .video-info
       position absolute
       top 233px
@@ -178,12 +207,11 @@ import { numParse, formatDate } from '../../common/js/util';
         background-color $color-background-d
         border-radius 4px
         padding 8px
-        margin-bottom 10px
+        margin-bottom 6px
         font-size $font-size-small
         color $color-text-l
         .title
           margin-bottom 4px
-          height 22px
           line-height 22px
           font-size $font-size-medium-x
           color $color-text-ll
