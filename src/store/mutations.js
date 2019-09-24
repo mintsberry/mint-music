@@ -31,6 +31,9 @@ const mutations = {
   [types.SET_VIDEO](state, video) {
     state.video = video;
   },
+  [types.SET_PLAYER_DISPLAY](state, flag) {
+    state.playerDisplay = flag;
+  },
   [types.SET_SEARCH_HISTORY](state, history) {
     state.searchHistory = history;
   },

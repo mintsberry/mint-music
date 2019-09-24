@@ -8,7 +8,8 @@ export const selectPlay = function ({commit}, {list, index}){
   commit(types.SET_PLAYLIST, list);
   commit(types.SET_CURRENT_INDEX, index);
   commit(types.SET_FULL_SCREEN, true);
-  commit(types.SET_PLAYING_STATE, true);  
+  commit(types.SET_PLAYING_STATE, true); 
+  commit(types.SET_PLAYER_DISPLAY,true); 
 }
 
 export const randomPlay = function({commit, state},{list}){
@@ -89,6 +90,12 @@ export const saveFavoriteList = function({commit},song) {
 export const deleteFavoriteList = function({commit},song) {
   commit(types.SET_FAVORITE_LIST, deleteFavorite(song))
 }
+
+export const closePlayer = function({commit}) {
+  commit(types.SET_PLAYING_STATE, false);
+  commit(types.SET_PLAYER_DISPLAY, false);
+}
+
 
 function findIndex(list, song) {
   return list.findIndex(item=>{

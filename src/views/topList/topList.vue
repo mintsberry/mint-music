@@ -33,13 +33,13 @@
       ])
     },
     created() {
+      if (!this.topList.topId){
+        this.$router.push('/rank');
+      }
       this._getMusicList()
     },
     methods: {
       _getMusicList(){
-        if (this.songs.length){
-          this.$router.push('/rank');
-        }
         getMusicList(this.topList.topId).then((resp) => {
           if (resp.code === ERR_OK){
             this.songs = this._normalizeSongs(resp.detail.data.songInfoList)

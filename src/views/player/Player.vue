@@ -1,5 +1,5 @@
 <template>
-  <div class="player" v-show="playList.length > 0">
+  <div class="player" v-show="playList.length > 0 && playerDisplay">
     <transition 
       name="normal"
       @enter="enter"
@@ -172,7 +172,8 @@
         'currentSong',
         'playing',
         'mode',
-        'favoriteList'
+        'favoriteList',
+        'playerDisplay'
       ])
     },
     watch: {
@@ -180,7 +181,8 @@
         if (!newSong.id || newSong.id===oldSong.id){
           return;
         } else {
-          this.songUrl = ''
+          this.songUrl = '';
+          this.playingLyric = '';
         }
         if (this.currentLyric) {
           this.currentLyric.stop();
@@ -191,25 +193,7 @@
         if (this.percent > 0) {
           this.currentTime = 0;
         }
-        getSong(this.currentSong.mid).then((resp) => {
-          if (resp.code === 0){
-            if (resp.req_0){
-              let songData = resp.req_0;
-              if (songData.code === 0) {
-                songData = songData.data;
-                if (songData.sip.length && songData.midurlinfo.length){
-                  if (songData.midurlinfo[0].purl && songData.midurlinfo[0].purl !== ''){
-                    this.songUrl = songData.sip[0] + songData.midurlinfo[0].purl;
-                  } else {
-                    this.$refs.toast.show();
-                    this.songReady = true;
-                    this.songUrl = "";
-                  }
-                }
-              }
-            }
-          }
-        })
+        this.getSongUrl();
       },
       songUrl() {
         if (this.songUrl && this.songUrl != ''){
@@ -327,6 +311,29 @@
         } else {        
           this.next();
         }
+      },
+      getSongUrl(){
+        getSong(this.currentSong.mid).then((resp) => {
+          if (resp.code === 0){
+            if (resp.req_0){
+              let songData = resp.req_0;
+              if (songData.code === 0) {
+                songData = songData.data;
+                if (songData.sip.length && songData.midurlinfo.length){
+                  if (songData.midurlinfo[0].purl && songData.midurlinfo[0].purl !== ''){
+                    this.songUrl = songData.sip[0] + songData.midurlinfo[0].purl;
+                  } else {
+                    this.$refs.toast.show();
+                    this.songReady = true;
+                    this.songUrl = "";
+                  }
+                } else {
+                  this.getSongUrl();
+                }
+              }
+            }
+          }
+        })
       },
       getLyric() {
         if (this.currentLyric){

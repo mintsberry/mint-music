@@ -39,7 +39,7 @@
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions, mapMutations } from 'vuex';
 import {getMv,getMvInfoAndOther} from '../../api/mv';
 import Scroll from '../../components/scroll/Scroll.vue';
 import { ERR_OK } from '../../api/config';
@@ -61,7 +61,7 @@ import { numParse, formatDate } from '../../common/js/util';
     },
     computed: {
       countPlay() {
-        if (this.mvInfo.playCnt) {
+        if (!this.mvInfo.playcnt) {
           return '';
         }
         return numParse(this.mvInfo.playcnt);
@@ -96,9 +96,10 @@ import { numParse, formatDate } from '../../common/js/util';
     },
     created(){
       if (Object.keys(this.video).length === 0) {
-        this.$router.push('/recommend');
+        this.$router.push('/rank');
         return;
       }
+      this.closePlayer();
       getMv(this.video.vid).then((resp)=>{
         if (resp.code === ERR_OK) {
           if (resp.getMvUrl.data && resp.getMvUrl.data[this.video.vid]) {
@@ -116,6 +117,9 @@ import { numParse, formatDate } from '../../common/js/util';
     mounted() {
       this.$refs.scroll.$el.style.top = `${this.getVideoHight()}px`;
       this.$refs.scroll.refresh();
+    },
+    beforeDestroy() {
+      this.setPlayerDisplay(true);
     },
     methods: {
       format(interval){
@@ -142,7 +146,13 @@ import { numParse, formatDate } from '../../common/js/util';
       },
       getVideoHight() {
         return this.$refs.video.clientHeight;
-      }
+      },
+      ...mapActions([
+        'closePlayer'
+      ]),
+      ...mapMutations({
+        setPlayerDisplay: 'SET_PLAYER_DISPLAY'
+      })
     },
 }
 </script>
@@ -151,7 +161,7 @@ import { numParse, formatDate } from '../../common/js/util';
   @import '../../common/stylus/mixin.styl'
   .music-video
     position fixed
-    z-index 50
+    z-index 200
     top 0
     left 0
     bottom 0

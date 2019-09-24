@@ -6,10 +6,20 @@ export function getSong(songmid) {
   // const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
   const url ='/api/getMusic'
   const data = Object.assign({}, commonParams, {
-    loginUin: 0,
+    // loginUin: 0,
+    // format: 'json',
+    // platform: 'yqq.json',
+    // data: `{"req_0":{"module":"vkey.GetVkeyServer","method":"CgiGetVkey","param":{"guid":"4274103134","songmid":["${songmid}"],"uin":"0","platform":"20"}}}`
+    g_tk: 5381,
+    loginUin: 972117204,
+    hostUin: 0,
     format: 'json',
+    inCharset: 'utf8',
+    outCharset: 'utf-8',
+    notice: 0,
     platform: 'yqq.json',
-    data: `{"req_0":{"module":"vkey.GetVkeyServer","method":"CgiGetVkey","param":{"guid":"4274103134","songmid":["${songmid}"],"uin":"0","platform":"20"}}}`
+    needNewCode: 0,
+    data: `{"req":{"module":"CDN.SrfCdnDispatchServer","method":"GetCdnDispatch","param":{"guid":"4274103134","calltype":0,"userip":""}},"req_0":{"module":"vkey.GetVkeyServer","method":"CgiGetVkey","param":{"guid":"4274103134","songmid":["${songmid}"],"songtype":[0],"uin":"972117204","loginflag":1,"platform":"20"}},"comm":{"uin":972117204,"format":"json","ct":24,"cv":0}}`
   })
 
   return axios.get(url, {
