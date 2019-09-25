@@ -7,19 +7,24 @@
       <div>
         <div class="mv-info">
           <div class="title">
-              <svg class="icon_mv" viewBox="0 0 38 22" width="22" height="22" v-show="mvInfo.type === 0">
+              <h1 class="text" :style="mvInfo.desc ? '24px' : '0'"> 
+              <svg class="icon-mv" viewBox="0 0 38 22" width="22" height="22" v-show="mvInfo.type === 0">
               <title>MV</title>
               <path d="M33,0.5H5c-2.5,0-4.5,2-4.5,4.5v12c0,2.5,2,4.5,4.5,4.5h28c2.5,0,4.5-2,4.5-4.5V5C37.5,2.5,35.5,0.5,33,0.5z
               M36,17c0,1.7-1.4,3-3,3H5c-1.7,0-3-1.3-3-3V5c0-1.7,1.3-3,3-3h28c1.7,0,3,1.3,3,3V17z M17.8,5.6h2.1V17h-1.7V8.9H18L14.5,17H13
               L9.5,8.9H9.4V17H7.7V5.6h2.1l4,9.2L17.8,5.6z M29.3,5.6h1.9l-4,11.4h-2.1L21,5.6h1.9l3.2,9.5L29.3,5.6z"></path>
               </svg>
-              <span class="text">{{mvInfo.name}}</span>
-              
+              {{mvInfo.name}}
+              </h1>
+              <svg v-show="this.mvInfo.desc" @click="moreDesc" ref="arrow" t="1569394825973" class="arrow" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7547" width="16" height="16" >
+                <path d="M75.243 550.694L511.291 88.357l436.047 462.337z" fill="#cdcdcd" p-id="7548"></path><path d="M948.766 622.173a4.972 4.972 0 0 0-1.431 0H75.228c-28.518 0-54.35-16.965-65.625-43.145a71.548 71.548 0 0 1 13.615-77.424L459.272 39.3c27.018-28.623 77.005-28.623 104.021 0l428.374 454.206c17.349 13.055 28.588 33.79 28.588 57.178 0 39.515-32.01 71.489-71.489 71.489zM240.93 479.196h540.705L511.283 192.542 240.931 479.196z" fill="#cdcdcd" p-id="7549">
+                </path>
+              </svg>
           </div>
           <div class="author"><i class="icon-mine"></i><span class="text">{{getVideoAuthor(mvInfo)}}</span></div>
           <div class="playCnt">总播放{{countPlay}}次</div>
           <div class="pub"><span>发布:{{pubDate(this.mvInfo.pubdate)}}</span>&nbsp;<span>时长{{durTime}}</span></div>
-          <div class="desc" v-if="this.mvInfo.desc" v-html="parseDesc(this.mvInfo.desc)"></div>
+          <div class="desc" v-show="this.mvInfo.desc" v-html="parseDesc(this.mvInfo.desc)" ref="desc"></div>
         </div>
         <ul class="relate-list">
           <li class="item" v-for="(item, index) in other" :key="index" @click="selectItem(item)">
@@ -27,7 +32,7 @@
               <img :src="item.cover_pic" alt="" width="100%" height="100%">
             </div>
             <div class="content">
-              <div class="name">{{item.name}}</div>
+              <h2 class="name">{{item.name}}</h2>
               <div class="introduce">
                 <span class="author">来自：{{getVideoAuthor(item)}}</span>&nbsp;
                 <!-- <span class="time">{{pubDate(item.pubdate)}}</span> -->
@@ -58,7 +63,8 @@ import { filterSinger } from '../../common/js/song';
         mp4Url: [],
         videoUrl: '',
         mvInfo: {},
-        other: []
+        other: [],
+        toggleDesc: false
       };
     },
     computed: {
@@ -94,16 +100,23 @@ import { filterSinger } from '../../common/js/song';
       },
       videoUrl(){
 
+      },
+      toggleDesc(newValue) {
+        if (newValue) {
+          this.$refs.desc.style.height = 'auto';
+        } else {
+          this.$refs.desc.style.height = '16px';
+        }
       }
     },
     created(){
+      this.rotate = 0;
       if (Object.keys(this.video).length === 0) {
         this.$router.push('/rank');
         return;
       }
       this.closePlayer();
       this.getMvInfo(this.video.vid);
-
     },
     mounted() {
       let width = document.documentElement.offsetWidth;
@@ -119,6 +132,11 @@ import { filterSinger } from '../../common/js/song';
     methods: {
       selectItem(item){
         this.getMvInfo(item.vid);
+      },
+      moreDesc() {
+        this.rotate += 180;
+        this.$refs.arrow.style.transform = `rotate(${this.rotate}deg)`;
+        this.toggleDesc = !this.toggleDesc;
       },
       getMvInfo(vid){
         getMv(vid).then((resp)=>{
@@ -211,15 +229,24 @@ import { filterSinger } from '../../common/js/song';
         font-size $font-size-small
         color $color-text-l
         .title
+          position relative
           margin-bottom 4px
           line-height 22px
           font-size $font-size-medium-x
           color $color-text-ll
-          .icon_mv
+          .icon-mv
             fill $color-text-ll
             margin-right 4px
+            vertical-align: top;
           .text
+            margin-right: 24px
             vertical-align top
+          .arrow
+            position absolute
+            top 6px
+            right 0
+            transform-origin 50% 30%
+            transition all 0.3s ease
         .author
           margin-bottom 8px
           .text
@@ -286,5 +313,4 @@ import { filterSinger } from '../../common/js/song';
               justify-content: space-between;
               color $color-text-l
               font-size $font-size-small
-          
 </style>
