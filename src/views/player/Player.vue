@@ -341,6 +341,10 @@
         }
         this.currentLyric = null;
         this.currentSong.getLyric().then((lyric)=>{
+          if (this.currentSong.lyric !== lyric) {
+            console(1)
+            return
+          }
           this.currentLyric = new Lyric(lyric, this.handlerLyric);
           if (this.playing){
             this.currentLyric.play();

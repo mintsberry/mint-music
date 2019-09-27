@@ -1,8 +1,9 @@
 <template>
   <div class="music-video">
-    <div class="video-player">
-      <video :src="videoUrl" controls x5-video-player-type="h5" x5-video-orientation="landscape" :poster="mvInfo.cover_pic" ref="video" class="video"></video>
+    <div class="back" @click="back">
+      <i class="icon-back"></i>
     </div>
+    <VideoPlayer ref="video" class="video" :videoUrl="videoUrl" :posterUrl="video.cover"></VideoPlayer>
     <Scroll class="video-info" :data="this.other" ref="scroll">
       <div>
         <div class="mv-info">
@@ -48,12 +49,14 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex';
 import {getMv,getMvInfoAndOther} from '../../api/mv';
 import Scroll from '../../components/scroll/Scroll.vue';
+import VideoPlayer from '../videoPlayer/VideoPlayer.vue';
 import { ERR_OK } from '../../api/config';
 import { numParse, formatDate } from '../../common/js/util';
 import { filterSinger } from '../../common/js/song';
   export default {
     components: {
-      Scroll
+      Scroll,
+      VideoPlayer
     },
     props: {
       
@@ -121,8 +124,8 @@ import { filterSinger } from '../../common/js/song';
     mounted() {
       let width = document.documentElement.offsetWidth;
       let height = width / 1.75 | 0
-      this.$refs.video.width = width;
-      this.$refs.video.height = height;
+      this.$refs.video.$el.style.width = `${width}px`;
+      this.$refs.video.$el.style.height = `${height}px`;
       this.$refs.scroll.$el.style.top = `${height}px`;
       this.$refs.scroll.refresh();
     },
@@ -130,6 +133,9 @@ import { filterSinger } from '../../common/js/song';
       this.setPlayerDisplay(true);
     },
     methods: {
+      back(){
+        this.$router.back();
+      },
       selectItem(item){
         this.getMvInfo(item.vid);
       },
@@ -209,11 +215,21 @@ import { filterSinger } from '../../common/js/song';
     bottom 0
     right 0
     background-color  $color-highlight-background
-    .video-player
-      .video
-        position: absolute;
-        top: 0;
-        left: 0;
+    .back
+      position absolute
+      top 0
+      left 6px
+      z-index 50
+      .icon-back
+        display block
+        padding 10px
+        font-size $font-size-large-x
+        color $color-theme
+    // .video-player
+    //   .video
+    //     position: absolute;
+    //     top: 0;
+    //     left: 0;
     .video-info
       position absolute
       top 233px
