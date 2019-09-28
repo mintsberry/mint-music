@@ -37,7 +37,6 @@
         if (newPercent >= 0 && !this.touch.initiated && this.progressBarWidth > 0){
           const barWidth = this.progressBarWidth - progressBtnWidth;
           const offsetWidth = newPercent * barWidth;
-          console.log("TCL: percent -> offsetWidth", offsetWidth)
           this._offset(offsetWidth);
         }
       }

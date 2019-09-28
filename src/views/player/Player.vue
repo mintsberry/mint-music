@@ -209,6 +209,9 @@
         if (this.songUrl && this.songUrl != ''){
           this.$nextTick( () => {
             newPlaying ? audio.play() : audio.pause();
+            if (this.currentLyric){
+              this.currentLyric.togglePlay();
+            }
           })
         }
       }
@@ -271,9 +274,6 @@
       },
       togglePlaying() {
         this.setPlayingState(!this.playing);
-        if (this.currentLyric){
-          this.currentLyric.togglePlay();
-        }
       },
       next(){
         if (!this.songReady) {
@@ -389,6 +389,7 @@
           this.$refs.lyricList.scrollTo(0, 0, 1000);
         }
         this.playingLyric = txt;
+        console.log("TCL: handlerLyric -> txt", txt)
       },
       showPlayList() {
         this.$refs.playList.show();
