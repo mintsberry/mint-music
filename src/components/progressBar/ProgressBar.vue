@@ -34,15 +34,19 @@
     },
     watch: {
       percent(newPercent) {
-        if (newPercent >= 0 && !this.touch.initiated){
-          const barWidth = this.$refs.progressBar.clientWidth - progressBtnWidth;
+        if (newPercent >= 0 && !this.touch.initiated && this.progressBarWidth > 0){
+          const barWidth = this.progressBarWidth - progressBtnWidth;
           const offsetWidth = newPercent * barWidth;
+          console.log("TCL: percent -> offsetWidth", offsetWidth)
           this._offset(offsetWidth);
         }
       }
     },
     created(){
       this.touch = {}
+    },
+    mounted() {
+      this.progressBarWidth = this.$refs.progressBar.clientWidth;
     },
     methods: {
       progressClick(e) {
