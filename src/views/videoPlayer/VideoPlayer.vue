@@ -13,7 +13,7 @@
       :style="{visibility: showBottom}">
       <div class="part time-l">{{format(currentTime)}}</div>
       <div class="progress-bar-wrapper">
-        <ProgressBar  :percent='percent' @percentChange="onPorgressBarChange"></ProgressBar>
+        <ProgressBar   @percentChange="onPorgressBarChange"></ProgressBar>
       </div>
       <div class="part time-r">{{format(duration)}}</div>
       <div class="part" @click="toggleFullScreen">
@@ -21,9 +21,9 @@
       </div>
     </div>
     <div class="poster" :style="posterImage" v-show="posterShow"></div>
-    <div class="mask" v-show="!isPlay"></div>
-    <div class="play-btn" @click="playVideo" v-show="!isPlay">
-      <i class="ckin-play"></i>
+    <div class="mask" v-show="controllShow"></div>
+    <div class="play-btn" @click="playVideo" v-show="controllShow">
+      <i class="ckin" :class="getIconCls" @click.stop="togglePlay"></i>
     </div>
   </div>
 </template>
@@ -63,7 +63,10 @@ import { format } from 'path';
       },
       showBottom() {
         return this.controllShow ? 'visible' : 'hidden'
-      }
+      },
+      getIconCls() {
+        return this.isPlay ? 'ckin-pause' : 'ckin-play';
+      },
     },
     watch: {
       isFullScreen(newValue) {
@@ -93,8 +96,8 @@ import { format } from 'path';
     methods: {
       playVideo() {
         this.$refs.video.play();
-        this.isPlay = true;
         this.posterShow = false;
+        this.isPlay = true;
         this.controllShow = !this.controllShow;
       },
       canPlay(){
@@ -105,7 +108,6 @@ import { format } from 'path';
       },
       toggleFullScreen() {
         this.isFullScreen = !this.isFullScreen;
-        console.log("TCL: toggleFullScreen -> this.isFullScreen", this.isFullScreen)
       },
       onPorgressBarChange(percent){
         const currentTime = this.duration * percent;
@@ -115,7 +117,20 @@ import { format } from 'path';
       },
       toggleControll() {
         this.controllShow = !this.controllShow;
+      },
+      togglePlay() {
         this.isPlay = !this.isPlay;
+        this.posterShow = false;
+        if (this.isPlay) {
+          this.$refs.video.play();
+        } else {
+          this.$refs.video.pause();
+        }
+      },
+      switchVideo() {
+        this.isPlay = false;
+        this.controllShow = true;
+        this.posterShow = true
       },
       format(interval){
         interval = interval | 0;
@@ -134,6 +149,7 @@ import { format } from 'path';
 </script>
 <style lang='stylus' scoped>
   @import '../../common/stylus/variable.styl';
+  @import '../../common/stylus/mixin.styl'
   .videoPlayer
     position relative
     font-size 0
@@ -168,7 +184,7 @@ import { format } from 'path';
         margin 0 10px 0px 10px
         .ckin-expand
           color $color-theme
-          font-size $font-size-medium
+          font-size $font-size-large
       .progress-bar-wrapper
         flex 1
     .poster
@@ -197,7 +213,15 @@ import { format } from 'path';
       left 0
       bottom 40px
       right 0
-      .ckin-play
-        font-size 18px
+      .ckin
+        position relative
+        font-size $font-size-large-x
         color $color-theme-d
+        &::after
+          content: "";
+          position: absolute;
+          left: -10px;
+          top: -10px; 
+          right: -10px;
+          bottom: -10px;
 </style>

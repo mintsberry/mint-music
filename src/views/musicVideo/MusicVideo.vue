@@ -3,7 +3,7 @@
     <div class="back" @click="back">
       <i class="icon-back"></i>
     </div>
-    <VideoPlayer ref="video" class="video" :videoUrl="videoUrl" :posterUrl="video.cover"></VideoPlayer>
+    <VideoPlayer ref="video" class="video" :videoUrl="videoUrl" :posterUrl="mvInfo.cover_pic"></VideoPlayer>
     <Scroll class="video-info" :data="this.other" ref="scroll">
       <div>
         <div class="mv-info">
@@ -28,7 +28,7 @@
           <div class="desc" v-show="this.mvInfo.desc" v-html="parseDesc(this.mvInfo.desc)" ref="desc"></div>
         </div>
         <ul class="relate-list">
-          <li class="item" v-for="(item, index) in other" :key="index" @click="selectItem(item)">
+          <li class="item border-1px" v-for="(item, index) in other" :key="index" @click="selectItem(item)">
             <div class="mv-pic" width="135px">
               <img :src="item.cover_pic" alt="" width="100%" height="100%">
             </div>
@@ -101,9 +101,6 @@ import { filterSinger } from '../../common/js/song';
           }
         }
       },
-      videoUrl(){
-
-      },
       toggleDesc(newValue) {
         if (newValue) {
           this.$refs.desc.style.height = 'auto';
@@ -138,6 +135,8 @@ import { filterSinger } from '../../common/js/song';
       },
       selectItem(item){
         this.getMvInfo(item.vid);
+        this.$refs.video.switchVideo();
+        console.log("TCL: selectItem -> this.$refs.video", this.$refs.video.switchVideo())
       },
       moreDesc() {
         this.rotate += 180;
@@ -286,7 +285,7 @@ import { filterSinger } from '../../common/js/song';
           align-items center
           font-size $font-size-medium
           color $color-text-ll
-          border-bottom 1px solid $color-highlight-background
+          border-1px($color-highlight-background)
           &:first-child
             padding-top 0
           &:last-child
