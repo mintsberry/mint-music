@@ -52,7 +52,7 @@
       flex: 1
       text-align: center
       .tab-link
-        padding-bottom: 5px
+        padding-bottom: 8px
         color: #636e72
       &.router-link-active
         .tab-link

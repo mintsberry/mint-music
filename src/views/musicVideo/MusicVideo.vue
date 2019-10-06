@@ -3,7 +3,10 @@
     <div class="back" @click="back">
       <i class="icon-back"></i>
     </div>
-    <VideoPlayer ref="video" class="video" :videoUrl="videoUrl" :posterUrl="mvInfo.cover_pic"></VideoPlayer>
+    <VideoPlayer ref="video" class="video" :videoUrl="videoUrl" :posterUrl="mvInfo.cover_pic"
+      @onFullScreen="onFullScreen"
+      @exitFullScreen='exitFullScreen'
+    ></VideoPlayer>
     <Scroll class="video-info" :data="this.other" ref="scroll">
       <div>
         <div class="mv-info">
@@ -121,10 +124,7 @@ import { filterSinger } from '../../common/js/song';
     mounted() {
       let width = document.documentElement.offsetWidth;
       let height = width / 1.75 | 0
-      this.$refs.video.$el.style.width = `${width}px`;
-      this.$refs.video.$el.style.height = `${height}px`;
-      this.$refs.scroll.$el.style.top = `${height}px`;
-      this.$refs.scroll.refresh();
+      this.changeVideo(width, height);
     },
     beforeDestroy() {
       this.setPlayerDisplay(true);
@@ -193,6 +193,21 @@ import { filterSinger } from '../../common/js/song';
       getVideoHight() {
         console.log(this.$refs.video.clientHeight);
         return this.$refs.video.clientHeight;
+      },
+      onFullScreen() {
+        this.$refs.video.$el.style.width = `100%`;
+        this.$refs.video.$el.style.height = `100%`;
+      }, 
+      exitFullScreen(){
+        let width = document.documentElement.offsetWidth;
+        let height = width / 1.75 | 0
+        this.changeVideo(width, height);
+      },
+      changeVideo(width, height){
+        this.$refs.video.$el.style.width = `${width}px`;
+        this.$refs.video.$el.style.height = `${height}px`;
+        this.$refs.scroll.$el.style.top = `${height}px`;
+        this.$refs.scroll.refresh();
       },
       ...mapActions([
         'closePlayer'

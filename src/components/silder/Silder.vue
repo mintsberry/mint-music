@@ -2,9 +2,7 @@
   <div class="slider" ref="slider">
     <div class="slider-group" ref="sliderGruop">
       <slot>
-
       </slot>
-      
     </div>
     <div class="dots">
         <span class="dot" v-for="(item, index) in dots" :key="index" :class="{active : currentIndex === index}">
@@ -52,15 +50,16 @@ import { constants } from 'crypto';
 
     mounted(){
       setTimeout(() => {
-
+        //设置轮播图宽度
         this._setSliderWidth();
+        //初始化
         this._initDots();
         this._initSlider();
         if (this.autoPlay){
           this._play();
         }
       },20);
-
+      //检测窗口大小变更，刷新轮播图
       window.addEventListener('resize', () => {
         if (!this.slider){
           return 
@@ -79,6 +78,8 @@ import { constants } from 'crypto';
     },
 
     methods: {
+      //根据视口宽度计算出sliderGroup宽度
+      //给sliderGroup子节点添加样式
       _setSliderWidth(isResize){
         this.children = this.$refs.sliderGruop.children;
         let width = 0;
@@ -98,6 +99,7 @@ import { constants } from 'crypto';
         this.dots = new Array(this.children.length);
       },
       _initSlider(){
+        //运行x轴滑动 禁止y轴
         this.slider = new BScroll(this.$refs.slider, {
           scrollX: true,
           scrollY: false,
@@ -108,11 +110,14 @@ import { constants } from 'crypto';
           },
         })
         this.slider.on('scrollEnd', () => {
+          //获取轮播图当前页索引
           let pageIndex = this.slider.getCurrentPage().pageX;
+          //循环轮播图会复制第一张图片 索引值需要--
           if (this.loop) {
             pageIndex -= 1;
           }
           this.currentIndex = pageIndex;
+          //自动播放清除定时器，防止当手动滑动时与定时器滑动重复
           if (this.autoPlay){
             clearTimeout(this.timer)
             this._play();
@@ -120,18 +125,15 @@ import { constants } from 'crypto';
         })
       },
       _play(){
-        let pageIndex = this.currentIndex + 1;
-        if (this.loop){
-          pageIndex += 1
-        }
+        // let pageIndex = this.currentIndex + 1;
+        // if (this.loop){
+        //   pageIndex += 1
+        // }
         this.timer = setTimeout(() => {
           this.slider.next(400);
         }, this.interval);
-
-
       }
     },
-
 }
 </script>
 <style lang='stylus' scoped>

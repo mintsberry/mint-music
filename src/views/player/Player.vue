@@ -342,7 +342,6 @@
         this.currentLyric = null;
         this.currentSong.getLyric().then((lyric)=>{
           if (this.currentSong.lyric !== lyric) {
-            console(1)
             return
           }
           this.currentLyric = new Lyric(lyric, this.handlerLyric);
@@ -389,7 +388,6 @@
           this.$refs.lyricList.scrollTo(0, 0, 1000);
         }
         this.playingLyric = txt;
-        console.log("TCL: handlerLyric -> txt", txt)
       },
       showPlayList() {
         this.$refs.playList.show();
@@ -579,7 +577,7 @@
       .middle
         position fixed
         width 100%
-        top 60px
+        top 70px
         bottom 160px
         white-space nowrap
         font-size 0

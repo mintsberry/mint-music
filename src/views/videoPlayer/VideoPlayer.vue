@@ -1,9 +1,9 @@
 <template>
-  <div class="videoPlayer">
+  <div class="videoPlayer" ref="videoPlayer">
     <div class="top">
       <h1 class="title"></h1>
     </div>
-    <video width="100%" height="100%" x5-video-player-type="h5" x5-video-orientation="landscape" 
+    <video width="100%" height="100%" 
       :src="videoUrl" ref="video"
       @canplay="canPlay"
       @timeupdate="timeUpdate"
@@ -13,7 +13,7 @@
       :style="{visibility: showBottom}">
       <div class="part time-l">{{format(currentTime)}}</div>
       <div class="progress-bar-wrapper">
-        <ProgressBar   @percentChange="onPorgressBarChange"></ProgressBar>
+        <ProgressBar  :percent='percent' @percentChange="onPorgressBarChange"></ProgressBar>
       </div>
       <div class="part time-r">{{format(duration)}}</div>
       <div class="part" @click="toggleFullScreen">
@@ -70,16 +70,19 @@ import { format } from 'path';
     },
     watch: {
       isFullScreen(newValue) {
+        let player = this.$refs.videoPlayer
+        console.log("TCL: isFullScreen -> player", player)
         if (newValue) {
-          if (this.$refs.video.requestFullscreen) {
-              this.$refs.video.requestFullscreen();
-          } else if (this.$refs.video.mozRequestFullScreen) {
-              this.$refs.video.mozRequestFullScreen();
-          } else if (this.$refs.video.webkitRequestFullscreen) {
-              this.$refs.video.webkitRequestFullscreen(); 
-          } else if (this.$refs.video.msRequestFullscreen) {
-              this.$refs.video.msRequestFullscreen();
+          if (player.requestFullscreen) {
+              player.requestFullscreen();
+          } else if (player.mozRequestFullScreen) {
+              player.mozRequestFullScreen();
+          } else if (player.webkitRequestFullscreen) {
+              player.webkitRequestFullscreen(); 
+          } else if (player.msRequestFullscreen) {
+              player.msRequestFullscreen();
           }
+          this.$emit("onFullScreen");
         } else {
           if (document.cancelFullScreen) {
               document.cancelFullScreen();
@@ -90,6 +93,7 @@ import { format } from 'path';
           } else if (document.msExitFullscreen) {
               document.msExitFullscreen();
           }
+          this.$emit("exitFullScreen");
         }
       }
     },
