@@ -59,6 +59,7 @@
           }
         })
       },
+      //封装成标准对象
       _normalizeSigner(list) {
         let map = {
           hot: {
@@ -67,6 +68,7 @@
           },
         }
         list.forEach((item,index) => {
+          //前几个数据为最火歌手
           if (index < HOT_SINGER_LEN) {
             map.hot.item.push(new Singer({
               id:item.Fsinger_mid,
@@ -74,6 +76,7 @@
             }))
           }
           const key = item.Findex
+          //判断map的key是否存在，不存在创建该键值
           if (!map[key]){
             map[key] = {
               title: key,
@@ -96,7 +99,7 @@
             hot.push(val);
           }
         }
-
+        //对歌手姓名排序
         ret.sort( (a,b)=>{
           return a.title.charCodeAt(0) - b.title.charCodeAt(0);
         })
