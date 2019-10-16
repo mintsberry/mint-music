@@ -64,6 +64,7 @@
           return group.title.substr(0, 1);
         })
       },
+      //通过索引计算fixed的标题
       fixedTitle() {
         if (this.scrollY > 0) {
           return ''
@@ -72,7 +73,6 @@
       },
   
     },
-
     watch: {
       data(){
         setTimeout(() => {
@@ -88,8 +88,10 @@
         for (let i = 0; i < listenHeight.length - 1; i++){
           let heightlow = listenHeight[i];
           let heighttop = listenHeight[i+1];
+          //判断滑动高度是否处于listGroup的item中
           if (-newY >= heightlow && -newY < heighttop) {
             this.currentIndex = i
+            //距离下一个listGroup的item高度
             this.diff = heighttop + newY;
             return 
           }
@@ -97,6 +99,7 @@
         this.currentIndex = listenHeight.length - 2
       },
       diff(newVal) {
+        //判断距离范围 当距离符合时计算fixed上移高度
         let fixedTop = (newVal > 0 && newVal < 30) ? newVal - TITLE_HEIGHT : 0;
         if (this.fixedTop === fixedTop) {
           return 
@@ -115,8 +118,10 @@
 
     methods: {
       onShortcutTouchStart(event) {
+        //获取自定义标签属性索引
         let anchorIndex = getData(event.target, 'index');
         let firstTouch = event.touches[0];
+        //记录第一个手中坐标
         this.touch.y1 = firstTouch.pageY;
         this.touch.anchorIndex = anchorIndex;
         this._scrollTo(this.touch.anchorIndex);
@@ -124,7 +129,9 @@
       onShortcutTouchMove(event) {
         let firstTouch = event.touches[0];
         this.touch.y2 = firstTouch.pageY
+        //通过移动距离除元素高度计算出移动元素个数
         let delta = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0
+        //移动后元素索引
         let index = parseInt(this.touch.anchorIndex) + parseInt(delta);
         this._scrollTo(index);
       },
@@ -140,8 +147,10 @@
       _scrollTo(index) {
         this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0);
       },
+      //将所有listGroup节点高度保存
       _calculateHeight() {
         this.listenHeight = []; 
+        //获取所有listGroup节点
         const list = this.$refs.listGroup;
         let height = 0;
         this.listenHeight.push(height);

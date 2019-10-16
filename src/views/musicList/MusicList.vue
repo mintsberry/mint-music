@@ -78,15 +78,18 @@
         let blur = 0;
         const percent = Math.abs( newY / this.imageHeight);
         if (newY > 0) {
+        //上滑
           scale = 1 + percent;
           zIndex = 10
         } else {
+          //下滑
           blur = Math.min(5 * percent, 5);
         }
         this.$refs.filter.style['backdrop-filter'] = `blur(${blur}px)`;
         this.$refs.filter.style['webkitBackdrop-filter'] = `blur(${blur}px)`;
         this.$refs.layer.style['transform']= `translate3d(0,${translateY}px,0)`
         this.$refs.layer.style['webkitTransform']= `translate3d(0,${translateY}px,0)`
+        //当滑动距离到达页面高度
         if (newY<translateY) {
           zIndex = 10;
           this.$refs.bgImage.style.paddingTop = 0
@@ -106,10 +109,10 @@
       this.probeType = 3
       this.listenScroll = true
     },
+    //背景图自适应，list需要挂载后更新高度
     mounted() {
       this.imageHeight = this.$refs.bgImage.clientHeight;
       this.$refs.list.$el.style.top = `${this.$refs.bgImage.clientHeight}px`;
-
     },
 
     methods: {

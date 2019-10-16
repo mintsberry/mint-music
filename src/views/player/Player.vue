@@ -186,10 +186,10 @@
         }
         if (this.currentLyric) {
           this.currentLyric.stop();
-          this.currentTime = 0
           this.currentLyric = null;
           this.currentLineNum = 0;
         }
+        this.currentTime = 0
         if (this.percent > 0) {
           this.currentTime = 0;
         }

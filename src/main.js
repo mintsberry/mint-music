@@ -4,7 +4,7 @@ import router from './router'
 // import store from './store'
 import VueLazyLoad from 'vue-lazyload'
 import store from './store/index'
-import "./common/stylus/index.styl";
+import './common/stylus/index.styl'
 Vue.config.productionTip = false
 Vue.use(VueLazyLoad, {
   loading: require('./common/image/mint.png')
@@ -12,5 +12,5 @@ Vue.use(VueLazyLoad, {
 new Vue({
   router,
   store,
-  render: h => h(App),
+  render: h => h(App)
 }).$mount('#app')

@@ -34,6 +34,7 @@
     },
     watch: {
       percent(newPercent) {
+        this.progressBarWidth = this.$refs.progressBar.clientWidth;
         if (newPercent >= 0 && !this.touch.initiated && this.progressBarWidth > 0){
           const barWidth = this.progressBarWidth - progressBtnWidth;
           const offsetWidth = newPercent * barWidth;
@@ -45,7 +46,6 @@
       this.touch = {}
     },
     mounted() {
-      this.progressBarWidth = this.$refs.progressBar.clientWidth;
     },
     methods: {
       progressClick(e) {

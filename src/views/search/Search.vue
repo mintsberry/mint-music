@@ -125,7 +125,6 @@
         return ret;
       },
       ...mapActions([
-
         'clearSearchHistory'
       ])
     },
